@@ -2,9 +2,9 @@
 {
     public partial class Player
     {
-        private const int CardsStartCount = 6;
+        private const int StartCardsCount = 6;
 
-        public List<Card> cards = new List<Card>(CardsStartCount);
+        public List<Card> cards = new List<Card>(StartCardsCount);
         public Role role;
 
         public Player(List<Card> cards)

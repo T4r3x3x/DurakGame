@@ -4,7 +4,7 @@ namespace GameEngine
 {
     public class GameManager
     {
-        private Stack<Card> _deckOfCards = new Stack<Card>();
+
         private Random _random = new Random();
         private int _maxAttackCards = 6;//todo не меняется со временем 
 
@@ -14,14 +14,14 @@ namespace GameEngine
         public List<List<Card>> TurnCards = new List<List<Card>>(2);//1 - attacker's cards, 0 - defender's cards
 
         //todo связать игровую сущность игрока с серверной (мб словарь?)
-        public List<Player> Players = new List<Player>(2);
+        public List<Player> Players;
 
 
         public bool IsPlaying = false;
         public Player Winner;
         public Card TrumpCard;
 
-        public GameManager(int PlayersCount)
+        public GameManager(GameSettings gameSettings)
         {
 
         }
@@ -30,51 +30,13 @@ namespace GameEngine
         public void StartGame()
         {
             isPlaying = true;
-            turnCards.Add(new List<Card>());
-            turnCards.Add(new List<Card>());
-            int i = 0;
-            foreach (var suit in Enum.GetValues(typeof(Card.Suit)))
-            {
-                foreach (var rank in Enum.GetValues(typeof(Card.Rank)))
-                {
-                    DeckOfCards.Push(new Card((Card.Suit)suit, (Card.Rank)rank));
-                    i++;
-                }
-            }
-            Reshuffle();
+
             players[1].role = Player.Role.Attacker;
             players[0].role = Player.Role.Defender;
             //DeckOfCards.Clear();
         }
 
-        void Reshuffle() //Fisher–Yates shuffle
-        {
-            List<Card> tempList = DeckOfCards.ToList();
-            Card temp;
-            int j;
-            for (int i = 35; i > 0; i--)
-            {
-                j = random.Next(i + 1);
-                temp = tempList[i];
-                tempList[i] = tempList[j];
-                tempList[j] = temp;
-            }
-            players.Add(new Player(tempList.GetRange(tempList.Count() - 6, 6)));
-            tempList.RemoveRange(tempList.Count() - 6, 6);
-            players.Add(new Player(tempList.GetRange(tempList.Count() - 6, 6)));
-            tempList.RemoveRange(tempList.Count() - 6, 6);
 
-            trump_card = tempList.Last();
-
-            Card temp_card = tempList.First();
-            tempList[0] = tempList.Last();
-            tempList[tempList.Count() - 1] = temp_card;
-            trump = temp_card.suit;
-
-            Interface.SendStartData(((int)trump_card.suit).ToString() + ((int)trump_card.rank).ToString());
-            foreach (var item in tempList)
-                DeckOfCards.Push(item);
-        }
 
         public void EndTurn(Player player)
         {
