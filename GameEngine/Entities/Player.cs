@@ -4,7 +4,7 @@
     {
         private const int StartCardsCount = 6;
 
-        public List<Card> cards = new List<Card>(StartCardsCount);
+        public readonly List<Card> cards = new List<Card>(StartCardsCount);
         public Role role;
 
         public Player(List<Card> cards)
@@ -20,6 +20,7 @@
                 case Role.Attacker: role = Role.Defender; break;
             }
         }
+
         public enum Role
         {
             Defender, Attacker,

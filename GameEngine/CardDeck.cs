@@ -9,7 +9,7 @@ namespace GameEngine
 
         public CardDeck(DeckType deckType) => CreateDeck(deckType);
 
-        public Card GetCard() => _cardsDeck.Peek();
+        public Card GetCard() => _cardsDeck.Pop();
 
         private void CreateDeck(DeckType deckType)
         {

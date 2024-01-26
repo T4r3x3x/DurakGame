@@ -2,13 +2,13 @@
 {
     public class Card
     {
-        public readonly Suit suit;
-        public readonly Rank rank;
+        public readonly Suit SuitValue;
+        public readonly Rank RankValue;
 
         public Card(Suit suit, Rank rank)
         {
-            this.suit = suit;
-            this.rank = rank;
+            SuitValue = suit;
+            RankValue = rank;
         }
 
         public enum Suit

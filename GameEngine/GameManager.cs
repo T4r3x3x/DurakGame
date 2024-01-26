@@ -8,7 +8,7 @@ namespace GameEngine
         private Random _random = new Random();
         private int _maxAttackCards = 6;//todo не меняется со временем 
 
-        public Card.Suit Trump;
+        public readonly Card.Suit TrumpSuit;
 
         //todo вынести в отдельный класс?
         public List<List<Card>> TurnCards = new List<List<Card>>(2);//1 - attacker's cards, 0 - defender's cards
@@ -26,17 +26,14 @@ namespace GameEngine
 
         }
 
-
+        #region API
         public void StartGame()
         {
             isPlaying = true;
+            SetRoles();
 
-            players[1].role = Player.Role.Attacker;
-            players[0].role = Player.Role.Defender;
             //DeckOfCards.Clear();
         }
-
-
 
         public void EndTurn(Player player)
         {
@@ -56,71 +53,6 @@ namespace GameEngine
             }
         }
 
-
-        void GiveUp(Player player)
-        {
-            player.AddCards(turnCards[(int)Player.Role.Defender]);
-            foreach (var card in turnCards[(int)Player.Role.Defender])
-            {
-                if (card == null)
-                    player.cards.Remove(card);
-            }
-            player.AddCards(turnCards[(int)Player.Role.Attacker]);
-        }
-
-        void SwitchRoles()
-        {
-            foreach (var player in players)
-            {
-                player.SwitchRole();
-            }
-        }
-
-        void NextTurn()
-        {
-            turnCards[0].Clear();
-            turnCards[1].Clear();
-
-            //выдаём карты
-            if (DeckOfCards.Count() != 0)//проверяем отсались ли карты  
-                GiveCards();
-            else
-                foreach (var player in players)
-                    if (player.cards_count == 0)
-                    {
-                        EndGame(player);
-                        break;
-                    }
-        }
-
-        void GiveCards()
-        {
-            int count_of_needed_cards = 0;
-
-            foreach (var player in players)
-                count_of_needed_cards += player.cards_count;
-
-            foreach (var player in players)
-                while (player.cards_count < 6)
-                {
-                    if (DeckOfCards.Count() == 0)
-                        break;
-                    player.AddCards(DeckOfCards.Pop());
-                }
-        }
-
-
-        void EndGame(Player player)
-        {
-            winner = player;
-            isPlaying = false;
-        }
-
-        public Card GetCard()
-        {
-            return DeckOfCards.Pop();
-        }
-
         public void ThrowCard(Card card, Player player, int position)//Для защищающегося 
         {
             if (turnCards[(int)player.role].Count() > position)
@@ -135,6 +67,7 @@ namespace GameEngine
                 }
             }
         }
+
         public void ThrowCard(Card card, Player player)//Для нападающего
         {
             if (player.role == Player.Role.Attacker)
@@ -156,8 +89,84 @@ namespace GameEngine
                 }
             }
         }
+        #endregion
 
-        bool CanTranslate(Card card)
+        private void SetRoles()
+        {
+            foreach (var player in Players)
+                player.role = Player.Role.Defender;
+
+            var index = ChooseFirstAttacker();
+            Players[index].role = Player.Role.Attacker;
+        }
+
+        private int ChooseFirstAttacker()
+        {
+            var attacker = (player: Players[0], minTrumpCard: new Card(TrumpSuit, Card.Rank.Ace));
+
+
+
+        }
+
+        private void GiveUp(Player player)
+        {
+            player.AddCards(turnCards[(int)Player.Role.Defender]);
+            foreach (var card in turnCards[(int)Player.Role.Defender])
+            {
+                if (card == null)
+                    player.cards.Remove(card);
+            }
+            player.AddCards(turnCards[(int)Player.Role.Attacker]);
+        }
+
+        private void SwitchRoles()
+        {
+            foreach (var player in players)
+            {
+                player.SwitchRole();
+            }
+        }
+
+        private void NextTurn()
+        {
+            turnCards[0].Clear();
+            turnCards[1].Clear();
+
+            //выдаём карты
+            if (DeckOfCards.Count() != 0)//проверяем отсались ли карты  
+                GiveCards();
+            else
+                foreach (var player in players)
+                    if (player.cards_count == 0)
+                    {
+                        EndGame(player);
+                        break;
+                    }
+        }
+
+        private void GiveCards()
+        {
+            int count_of_needed_cards = 0;
+
+            foreach (var player in players)
+                count_of_needed_cards += player.cards_count;
+
+            foreach (var player in players)
+                while (player.cards_count < 6)
+                {
+                    if (DeckOfCards.Count() == 0)
+                        break;
+                    player.AddCards(DeckOfCards.Pop());
+                }
+        }
+
+        private void EndGame(Player player)
+        {
+            winner = player;
+            isPlaying = false;
+        }
+
+        private bool CanTranslate(Card card)
         {
             foreach (var _card in turnCards[(int)Player.Role.Attacker])
                 if (card.rank != _card.rank)
@@ -165,14 +174,14 @@ namespace GameEngine
             return true;
         }
 
-        void Translate(Card card)
+        private void Translate(Card card)
         {
             SwitchRoles();
             turnCards[(int)Player.Role.Attacker].Add(card);
             turnCards[(int)Player.Role.Defender].Add(null);
         }
 
-        bool CanThrow(Card card)
+        private bool CanThrow(Card card)
         {
             foreach (var _card in turnCards[0])
             {
@@ -188,17 +197,22 @@ namespace GameEngine
             return false;
         }
 
-        bool ComparingCards(Card attacker, Card defender)
+        private bool CanFilled(Card fillingCard, Card candidate)
         {
-            if (attacker.suit == defender.suit)
+            if (candidate.SuitValue == fillingCard.SuitValue)
             {
-                if (defender.rank > attacker.rank)
+                if (candidate.RankValue > fillingCard.RankValue)
                     return true;
             }
-            else if (defender.suit == trump)
+            else if (IsTrump(candidate))
                 return true;
+
             return false;
         }
 
+        private bool IsTrump(Card candidate)
+        {
+            return candidate.SuitValue == TrumpSuit;
+        }
     }
 }
