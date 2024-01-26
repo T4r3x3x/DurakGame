@@ -1,32 +1,33 @@
-﻿using System;
-using System.Net;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Sockets;
+﻿using GameEngine.Entities;
 
-namespace DurakForms
+namespace GameEngine
 {
-    static internal class GameManager //всё что связано непросредственно с самой игрой (козыри, чей ход и т.д.)
+    public class GameManager
     {
+        private Stack<Card> _deckOfCards = new Stack<Card>();
+        private Random _random = new Random();
+        private int _maxAttackCards = 6;//todo не меняется со временем 
 
-        static internal Card.Suit trump;
-        static internal Stack<Card> DeckOfCards = new Stack<Card>();
+        public Card.Suit Trump;
 
-        static Random rand = new Random();
+        //todo вынести в отдельный класс?
+        public List<List<Card>> TurnCards = new List<List<Card>>(2);//1 - attacker's cards, 0 - defender's cards
 
-        static internal List<List<Card>> turnCards = new List<List<Card>>(2);//1 - attacker's cards, 0 - defender's cards
+        //todo связать игровую сущность игрока с серверной (мб словарь?)
+        public List<Player> Players = new List<Player>(2);
 
-        static internal List<Player> players = new List<Player>(2);
 
-        static int cards_max_count_at_current_turn = 6;
+        public bool IsPlaying = false;
+        public Player Winner;
+        public Card TrumpCard;
 
-        static internal bool isPlaying = false;
-        static internal Player winner;
-        static internal Card trump_card;
+        public GameManager(int PlayersCount)
+        {
 
-        static public void StartGame()
+        }
+
+
+        public void StartGame()
         {
             isPlaying = true;
             turnCards.Add(new List<Card>());
@@ -46,14 +47,14 @@ namespace DurakForms
             //DeckOfCards.Clear();
         }
 
-        static void Reshuffle() //Fisher–Yates shuffle
+        void Reshuffle() //Fisher–Yates shuffle
         {
             List<Card> tempList = DeckOfCards.ToList();
             Card temp;
             int j;
             for (int i = 35; i > 0; i--)
             {
-                j = rand.Next(i + 1);
+                j = random.Next(i + 1);
                 temp = tempList[i];
                 tempList[i] = tempList[j];
                 tempList[j] = temp;
@@ -64,7 +65,7 @@ namespace DurakForms
             tempList.RemoveRange(tempList.Count() - 6, 6);
 
             trump_card = tempList.Last();
-            
+
             Card temp_card = tempList.First();
             tempList[0] = tempList.Last();
             tempList[tempList.Count() - 1] = temp_card;
@@ -75,11 +76,11 @@ namespace DurakForms
                 DeckOfCards.Push(item);
         }
 
-        public static void EndTurn(Player player)
+        public void EndTurn(Player player)
         {
             if (player.role == Player.Role.Attacker)
             {
-                if(turnCards[(int)Player.Role.Attacker].Count() != 0)
+                if (turnCards[(int)Player.Role.Attacker].Count() != 0)
                     if (turnCards[(int)Player.Role.Defender].Count(card => card == null) == 0) //если защищающийся покрыл все карты
                     {
                         NextTurn();
@@ -94,7 +95,7 @@ namespace DurakForms
         }
 
 
-        static void GiveUp(Player player)
+        void GiveUp(Player player)
         {
             player.AddCards(turnCards[(int)Player.Role.Defender]);
             foreach (var card in turnCards[(int)Player.Role.Defender])
@@ -105,7 +106,7 @@ namespace DurakForms
             player.AddCards(turnCards[(int)Player.Role.Attacker]);
         }
 
-        static void SwitchRoles()
+        void SwitchRoles()
         {
             foreach (var player in players)
             {
@@ -113,7 +114,7 @@ namespace DurakForms
             }
         }
 
-        static void NextTurn()
+        void NextTurn()
         {
             turnCards[0].Clear();
             turnCards[1].Clear();
@@ -130,7 +131,7 @@ namespace DurakForms
                     }
         }
 
-        static void GiveCards()
+        void GiveCards()
         {
             int count_of_needed_cards = 0;
 
@@ -147,18 +148,18 @@ namespace DurakForms
         }
 
 
-        static void EndGame(Player player)
+        void EndGame(Player player)
         {
             winner = player;
             isPlaying = false;
         }
 
-        static public Card GetCard()
+        public Card GetCard()
         {
             return DeckOfCards.Pop();
         }
 
-        static public void ThrowCard(Card card, Player player, int position)//Для защищающегося 
+        public void ThrowCard(Card card, Player player, int position)//Для защищающегося 
         {
             if (turnCards[(int)player.role].Count() > position)
             {
@@ -172,7 +173,7 @@ namespace DurakForms
                 }
             }
         }
-        static public void ThrowCard(Card card, Player player)//Для нападающего
+        public void ThrowCard(Card card, Player player)//Для нападающего
         {
             if (player.role == Player.Role.Attacker)
             {
@@ -194,7 +195,7 @@ namespace DurakForms
             }
         }
 
-        static bool CanTranslate(Card card)
+        bool CanTranslate(Card card)
         {
             foreach (var _card in turnCards[(int)Player.Role.Attacker])
                 if (card.rank != _card.rank)
@@ -202,14 +203,14 @@ namespace DurakForms
             return true;
         }
 
-        static void Translate(Card card)
+        void Translate(Card card)
         {
             SwitchRoles();
             turnCards[(int)Player.Role.Attacker].Add(card);
             turnCards[(int)Player.Role.Defender].Add(null);
         }
 
-        static bool CanThrow(Card card)
+        bool CanThrow(Card card)
         {
             foreach (var _card in turnCards[0])
             {
@@ -225,7 +226,7 @@ namespace DurakForms
             return false;
         }
 
-        static bool ComparingCards(Card attacker, Card defender)
+        bool ComparingCards(Card attacker, Card defender)
         {
             if (attacker.suit == defender.suit)
             {
