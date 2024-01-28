@@ -2,26 +2,38 @@
 {
     public partial class Player
     {
-        private const int StartCardsCount = 6;
+        private readonly int _startCardsCount;
 
-        public readonly List<Card> cards = new List<Card>(StartCardsCount);
-        public Role role;
+        public readonly List<Card> Cards;
+        public PlayerRole Role;
+        public bool IsDone = false;
 
-        public Player(List<Card> cards)
+        public Player(int startCardsCount)
         {
-            this.cards = cards;
+            _startCardsCount = startCardsCount;
+            Cards = new List<Card>(_startCardsCount);
         }
 
         public void SwitchRole()
         {
-            switch (role)
+            switch (Role)
             {
-                case Role.Defender: role = Role.Attacker; break;
-                case Role.Attacker: role = Role.Defender; break;
+                case PlayerRole.Defender: Role = PlayerRole.Attacker; break;
+                case PlayerRole.Attacker: Role = PlayerRole.Defender; break;
             }
         }
 
-        public enum Role
+        public int NeededCardsCount()
+        {
+            var neededCardsCount = _startCardsCount - Cards.Count;
+
+            if (neededCardsCount < 0)
+                return 0;
+
+            return neededCardsCount;
+        }
+
+        public enum PlayerRole
         {
             Defender, Attacker,
         }

@@ -4,200 +4,210 @@ namespace GameEngine
 {
     public class GameManager
     {
+        private int _maxAttackCards = 6;
 
-        private Random _random = new Random();
-        private int _maxAttackCards = 6;//todo не меняется со временем 
+        private Player _turnBeginner;
 
+        private CardDeck _deck;
+        private TurnCards _turnCards = new TurnCards();
+
+        public readonly List<Player> Players;
+
+        public readonly Card TrumpCard;
         public readonly Card.Suit TrumpSuit;
 
-        //todo вынести в отдельный класс?
-        public List<List<Card>> TurnCards = new List<List<Card>>(2);//1 - attacker's cards, 0 - defender's cards
-
-        //todo связать игровую сущность игрока с серверной (мб словарь?)
-        public List<Player> Players;
-
-
-        public bool IsPlaying = false;
-        public Player Winner;
-        public Card TrumpCard;
+        public event Action OnEndGame;
+        public event Func<Player> OnPlayerEndedGame;
 
         public GameManager(GameSettings gameSettings)
         {
+            _deck = new(gameSettings.DeckType);
+            Players = new List<Player>(gameSettings.PlayersCount);
+            IntializePlayers(gameSettings);
+        }
 
+        private void IntializePlayers(GameSettings gameSettings)
+        {
+            for (int i = 0; i < Players.Count; i++)
+                Players.Add(new Player(gameSettings.PlayersStartCardsCount));
         }
 
         #region API
         public void StartGame()
         {
-            isPlaying = true;
-            SetRoles();
-
-            //DeckOfCards.Clear();
+            GiveCards();
+            SetStartRoles();
         }
 
         public void EndTurn(Player player)
         {
-            if (player.role == Player.Role.Attacker)
-            {
-                if (turnCards[(int)Player.Role.Attacker].Count() != 0)
-                    if (turnCards[(int)Player.Role.Defender].Count(card => card == null) == 0) //если защищающийся покрыл все карты
-                    {
+            if (player.Role == Player.PlayerRole.Attacker)
+                if (_turnCards.HasAnyCard)
+                    if (_turnCards.AllCardsFilled)
                         NextTurn();
-                        SwitchRoles();
-                    }
-            }
-            else if (player.role == Player.Role.Defender)
-            {
-                GiveUp(player);
-                NextTurn();
-            }
         }
 
-        public void ThrowCard(Card card, Player player, int position)//Для защищающегося 
+        public void GiveUp(Player player)
         {
-            if (turnCards[(int)player.role].Count() > position)
-            {
-                if (turnCards[(int)player.role][position] == null)
-                {
-                    if (ComparingCards(turnCards[(int)Player.Role.Attacker][position], card))
-                    {
-                        turnCards[(int)player.role][position] = card;
-                        player.cards.Remove(card);
-                    }
-                }
-            }
+            if (player.Role != Player.PlayerRole.Defender)
+                return;
+
+            var cards = _turnCards.GetAll();
+            player.Cards.AddRange(cards);
+
+            NextTurn();
         }
 
-        public void ThrowCard(Card card, Player player)//Для нападающего
+        public void ThrowDeffenceCard(Player cardOnwer, Card card, int position)
         {
-            if (player.role == Player.Role.Attacker)
+            if (cardOnwer.Role == Player.PlayerRole.Defender)
+                if (position < _turnCards.AttackCardsCount)
+                    if (!_turnCards.IsCardFilled(position))
+                        if (CanFill(_turnCards.GetAttackCard(position), card))
+                            PlaceDeffenceCard(cardOnwer, card, position);
+        }
+
+
+        public void ThrowAttackCard(Player cardOwner, Card card)
+        {
+            if (cardOwner.Role == Player.PlayerRole.Attacker)
             {
-                if (turnCards[(int)player.role].Count() < cards_max_count_at_current_turn)
-                    if (CanThrow(card) || turnCards[(int)player.role].Count() == 0)
-                    {
-                        turnCards[(int)player.role].Add(card);
-                        turnCards[0].Add(null);
-                        player.cards.Remove(card);
-                    }
+                if (CanThrow(cardOwner, card))
+                    PlaceAttackCard(cardOwner, card);
             }
-            else if (turnCards[(int)Player.Role.Defender].Count(card => card == null) == turnCards[(int)Player.Role.Defender].Count())//если в защиту не была кинута ни одна карта 
+            else
             {
                 if (CanTranslate(card))
-                {
-                    player.cards.Remove(card);
-                    Translate(card);
-                }
+                    Translate(cardOwner, card);
             }
         }
         #endregion
 
-        private void SetRoles()
+        private void PlaceDeffenceCard(Player cardOwner, Card card, int position)
+        {
+            _turnCards.AddDeffenceCard(card, position);
+            cardOwner.Cards.Remove(card);
+        }
+
+        private void PlaceAttackCard(Player cardOwner, Card card)
+        {
+            _turnCards.AddAttackCard(card);
+            cardOwner.Cards.Remove(card);
+        }
+
+        private void SetStartRoles()
         {
             foreach (var player in Players)
-                player.role = Player.Role.Defender;
+                player.Role = Player.PlayerRole.Attacker;
 
-            var index = ChooseFirstAttacker();
-            Players[index].role = Player.Role.Attacker;
+            _turnBeginner = ChooseFirstAttacker();
         }
 
-        private int ChooseFirstAttacker()
+        private Player ChooseFirstAttacker()
         {
-            var attacker = (player: Players[0], minTrumpCard: new Card(TrumpSuit, Card.Rank.Ace));
+            var playersAndTrumps = GetPlayerAndMinTrump();
+            var result = playersAndTrumps.OrderBy(x => x.minTrumpCard).FirstOrDefault();
 
+            if (result.trumpCardOnwer == null)
+                return Players[0];
 
-
+            return result.trumpCardOnwer;
         }
 
-        private void GiveUp(Player player)
+        private List<(Player trumpCardOnwer, Card? minTrumpCard)> GetPlayerAndMinTrump()
         {
-            player.AddCards(turnCards[(int)Player.Role.Defender]);
-            foreach (var card in turnCards[(int)Player.Role.Defender])
-            {
-                if (card == null)
-                    player.cards.Remove(card);
-            }
-            player.AddCards(turnCards[(int)Player.Role.Attacker]);
+            List<(Player trumpCardOnwer, Card? minTrumpCard)> result = new();
+
+            foreach (var player in Players)
+                result.Add((player, GetMinTrumpCard(player)));
+
+            return result;
         }
 
-        private void SwitchRoles()
+        private Card? GetMinTrumpCard(Player player)
         {
-            foreach (var player in players)
-            {
-                player.SwitchRole();
-            }
+            return player.Cards.Where(card => card.SuitValue == TrumpSuit).OrderBy(card => card.RankValue).FirstOrDefault();
+        }
+
+        private void SwitchRoles()//todo вообще не нравится, какая-то дикая путаница выходит beginnerIndex выполняет аж 3 разных роли 
+        {
+            var beginnerIndex = Players.IndexOf(_turnBeginner);//todo придумать что-то с именем переменной - оно запутывает
+
+            if (++beginnerIndex > Players.Count)
+                beginnerIndex = 0;
+
+            _turnBeginner = Players[beginnerIndex]; //todo переделать на 3 роли чтобы не пришлось таскать с собой переменную? 
+            _turnBeginner.Role = Player.PlayerRole.Attacker;
+            Players[beginnerIndex++].Role = Player.PlayerRole.Defender;
         }
 
         private void NextTurn()
         {
-            turnCards[0].Clear();
-            turnCards[1].Clear();
+            _turnCards.Clear();
+            GiveCards();
+            CheckRanOutCardsPlayers();
+            SwitchRoles();
+            _maxAttackCards = GetDeffencePlayerCardsCount();
+        }
 
-            //выдаём карты
-            if (DeckOfCards.Count() != 0)//проверяем отсались ли карты  
-                GiveCards();
-            else
-                foreach (var player in players)
-                    if (player.cards_count == 0)
-                    {
-                        EndGame(player);
-                        break;
-                    }
+        private void CheckRanOutCardsPlayers()
+        {
+            if (_deck.HasAnyCard())
+                return;
+
+            foreach (var player in Players)
+                if (player.Cards.Count == 0)
+                    Players.Remove(player);
+            if (Players.Count < 2)
+                OnEndGame();
+        }
+
+        private int GetDeffencePlayerCardsCount()
+        {
+            return Players.Where(player => player.Role == Player.PlayerRole.Defender).First().Cards.Count;
         }
 
         private void GiveCards()
         {
-            int count_of_needed_cards = 0;
+            if (!_deck.HasAnyCard())
+                return;
 
-            foreach (var player in players)
-                count_of_needed_cards += player.cards_count;
-
-            foreach (var player in players)
-                while (player.cards_count < 6)
-                {
-                    if (DeckOfCards.Count() == 0)
-                        break;
-                    player.AddCards(DeckOfCards.Pop());
-                }
-        }
-
-        private void EndGame(Player player)
-        {
-            winner = player;
-            isPlaying = false;
+            foreach (var player in Players)
+            {
+                var neededCardsCount = player.NeededCardsCount();
+                var cards = _deck.GetCards(neededCardsCount);
+                player.Cards.AddRange(cards);
+            }
         }
 
         private bool CanTranslate(Card card)
         {
-            foreach (var _card in turnCards[(int)Player.Role.Attacker])
-                if (card.rank != _card.rank)
-                    return false;
-            return true;
+            if (_turnCards.IsDeffenceStarted)
+                return false;
+
+            return _turnCards.HasCardWithRank(card.RankValue);
         }
 
-        private void Translate(Card card)
+        private void Translate(Player player, Card card)
         {
+            player.Cards.Remove(card);
+            _turnCards.AddAttackCard(card);
             SwitchRoles();
-            turnCards[(int)Player.Role.Attacker].Add(card);
-            turnCards[(int)Player.Role.Defender].Add(null);
+            //_turnCards.Translate();
         }
 
-        private bool CanThrow(Card card)
+        private bool CanThrow(Player cardOwner, Card card)
         {
-            foreach (var _card in turnCards[0])
-            {
-                if (_card != null)
-                    if (_card.rank == card.rank)
-                        return true;
-            }
-            foreach (var _card in turnCards[1])
-            {
-                if (_card.rank == card.rank)
-                    return true;
-            }
-            return false;
+            if (!_turnCards.IsDeffenceStarted)
+                return cardOwner == _turnBeginner;
+
+            if (_turnCards.AttackCardsCount < _maxAttackCards)
+                return true;
+
+            return _turnCards.HasCardWithRank(card.RankValue);
         }
 
-        private bool CanFilled(Card fillingCard, Card candidate)
+        private bool CanFill(Card fillingCard, Card candidate)
         {
             if (candidate.SuitValue == fillingCard.SuitValue)
             {
