@@ -6,8 +6,6 @@ namespace GameEngine
     {
         private int _maxAttackCards = 6;
 
-        private Player _turnBeginner;
-
         private CardDeck _deck;
         private TurnCards _turnCards = new TurnCards();
 
@@ -41,7 +39,7 @@ namespace GameEngine
 
         public void EndTurn(Player player)
         {
-            if (player.Role == Player.PlayerRole.Attacker)
+            if (player.Role != Player.PlayerRole.Defender)
                 if (_turnCards.HasAnyCard)
                     if (_turnCards.AllCardsFilled)
                         NextTurn();
@@ -70,7 +68,7 @@ namespace GameEngine
 
         public void ThrowAttackCard(Player cardOwner, Card card)
         {
-            if (cardOwner.Role == Player.PlayerRole.Attacker)
+            if (cardOwner.Role != Player.PlayerRole.Defender)
             {
                 if (CanThrow(cardOwner, card))
                     PlaceAttackCard(cardOwner, card);
@@ -98,9 +96,10 @@ namespace GameEngine
         private void SetStartRoles()
         {
             foreach (var player in Players)
-                player.Role = Player.PlayerRole.Attacker;
+                player.Role = Player.PlayerRole.SubAttacker;
 
-            _turnBeginner = ChooseFirstAttacker();
+            var choosen = ChooseFirstAttacker();
+            choosen.Role = Player.PlayerRole.MainAttacker;
         }
 
         private Player ChooseFirstAttacker()
@@ -129,16 +128,32 @@ namespace GameEngine
             return player.Cards.Where(card => card.SuitValue == TrumpSuit).OrderBy(card => card.RankValue).FirstOrDefault();
         }
 
-        private void SwitchRoles()//todo вообще не нравится, какая-то дикая путаница выходит beginnerIndex выполняет аж 3 разных роли 
+        private void SwitchRoles()//todo вообще не нравится, как4ая-то дикая путаница выходит beginnerIndex выполняет аж 3 разных роли 
         {
-            var beginnerIndex = Players.IndexOf(_turnBeginner);//todo придумать что-то с именем переменной - оно запутывает
+            var previousMainAttacker = GetPreviousMainAttacker();
+            previousMainAttacker.Role = Player.PlayerRole.SubAttacker;
 
-            if (++beginnerIndex > Players.Count)
-                beginnerIndex = 0;
+            var previousMainAttackerIndex = Players.IndexOf(previousMainAttacker);
 
-            _turnBeginner = Players[beginnerIndex]; //todo переделать на 3 роли чтобы не пришлось таскать с собой переменную? 
-            _turnBeginner.Role = Player.PlayerRole.Attacker;
-            Players[beginnerIndex++].Role = Player.PlayerRole.Defender;
+            var newMainAttackerIndex = GetNextPlayerIndex(previousMainAttackerIndex);
+            Players[newMainAttackerIndex].Role = Player.PlayerRole.MainAttacker;
+
+            var newDeffenderIndex = GetNextPlayerIndex(newMainAttackerIndex);
+            Players[newDeffenderIndex].Role = Player.PlayerRole.Defender;
+        }
+
+        private Player GetPreviousMainAttacker()
+        {
+            return Players.Find(player => player.Role == Player.PlayerRole.MainAttacker)!;
+        }
+
+        private int GetNextPlayerIndex(int currentPlayerIndex)
+        {
+            var nextPlayerIndex = currentPlayerIndex++;
+            if (nextPlayerIndex > Players.Count)
+                nextPlayerIndex = 0;
+
+            return nextPlayerIndex;
         }
 
         private void NextTurn()
@@ -199,7 +214,7 @@ namespace GameEngine
         private bool CanThrow(Player cardOwner, Card card)
         {
             if (!_turnCards.IsDeffenceStarted)
-                return cardOwner == _turnBeginner;
+                return cardOwner.Role == Player.PlayerRole.MainAttacker;
 
             if (_turnCards.AttackCardsCount < _maxAttackCards)
                 return true;

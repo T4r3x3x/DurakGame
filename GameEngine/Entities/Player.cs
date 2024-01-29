@@ -14,14 +14,14 @@
             Cards = new List<Card>(_startCardsCount);
         }
 
-        public void SwitchRole()
-        {
-            switch (Role)
-            {
-                case PlayerRole.Defender: Role = PlayerRole.Attacker; break;
-                case PlayerRole.Attacker: Role = PlayerRole.Defender; break;
-            }
-        }
+        //public void SwitchRole()
+        //{
+        //    switch (Role)
+        //    {
+        //        case PlayerRole.Defender: Role = PlayerRole.Attacker; break;
+        //        case PlayerRole.Attacker: Role = PlayerRole.Defender; break;
+        //    }
+        //}
 
         public int NeededCardsCount()
         {
@@ -35,7 +35,7 @@
 
         public enum PlayerRole
         {
-            Defender, Attacker,
+            Defender, SubAttacker, MainAttacker,
         }
     }
 }
