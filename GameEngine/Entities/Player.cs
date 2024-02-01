@@ -4,15 +4,28 @@
     {
         private readonly int _startCardsCount;
 
-        public readonly List<Card> Cards;
+        private readonly List<Card> _cards;
+
         public PlayerRole Role;
         public bool IsDone = false;
 
         public Player(int startCardsCount)
         {
             _startCardsCount = startCardsCount;
-            Cards = new List<Card>(_startCardsCount);
+            _cards = new List<Card>(_startCardsCount);
         }
+
+        public void AddCards(List<Card> cards)
+        {
+            _cards.AddRange(cards);
+        }
+
+        public void RemoveCard(Card card)
+        {
+            _cards.Remove(card);
+        }
+
+        public IEnumerable<Card> Cards => _cards;
 
         //public void SwitchRole()
         //{
@@ -25,7 +38,7 @@
 
         public int NeededCardsCount()
         {
-            var neededCardsCount = _startCardsCount - Cards.Count;
+            var neededCardsCount = _startCardsCount - _cards.Count;
 
             if (neededCardsCount < 0)
                 return 0;

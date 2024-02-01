@@ -7,6 +7,8 @@ namespace GameEngine
         private List<Card> _attackCards = new List<Card>();
         private List<Card> _deffenceCards = new List<Card>();
 
+        public IEnumerable<Card> AttackCards => _attackCards;
+        public IEnumerable<Card> DeffenceCards => _deffenceCards;
         //todo внедрить сюда отслеживание сколько возможно кинуть защищающемуся карт? 
 
         public void AddAttackCard(Card card)

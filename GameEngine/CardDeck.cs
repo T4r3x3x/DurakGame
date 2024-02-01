@@ -5,9 +5,11 @@ namespace GameEngine
     public class CardDeck
     {
         private const int ExtendedRanskCount = 4;
-        private Stack<Card> _cardsDeck = new Stack<Card>();
+        private Stack<Card> _cardsDeck;
 
         public CardDeck(DeckType deckType) => CreateDeck(deckType);
+
+        public Card GetCard() => _cardsDeck.Pop();
 
         public List<Card> GetCards(int count)
         {
@@ -58,7 +60,7 @@ namespace GameEngine
         {
             Random random = new Random();
 
-            for (int i = cards.Count; i > 0; i--)
+            for (int i = cards.Count - 1; i > 0; i--)
             {
                 var j = random.Next(i + 1);
                 (cards[i], cards[j]) = (cards[j], cards[i]);

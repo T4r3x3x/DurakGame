@@ -11,38 +11,47 @@ namespace GameEngine
 
         public readonly List<Player> Players;
 
-        public readonly Card TrumpCard;
-        public readonly Card.Suit TrumpSuit;
+        public Card TrumpCard { get; private set; }
+        public Card.Suit TrumpSuit { get => TrumpCard.SuitValue; }
 
         public event Action OnEndGame;
         public event Func<Player> OnPlayerEndedGame;
 
-        public GameManager(GameSettings gameSettings)
+        internal GameManager(List<Player> players, CardDeck deck, TurnCards turnCards)
         {
-            _deck = new(gameSettings.DeckType);
-            Players = new List<Player>(gameSettings.PlayersCount);
-            IntializePlayers(gameSettings);
-        }
-
-        private void IntializePlayers(GameSettings gameSettings)
-        {
-            for (int i = 0; i < Players.Count; i++)
-                Players.Add(new Player(gameSettings.PlayersStartCardsCount));
+            _deck = deck;
+            _turnCards = turnCards;
+            Players = players;
         }
 
         #region API
         public void StartGame()
         {
+            SetTrump();
             GiveCards();
             SetStartRoles();
         }
 
+        private void SetTrump() => TrumpCard = _deck.GetCard();
+
         public void EndTurn(Player player)
         {
+            player.IsDone = true;
+
             if (player.Role != Player.PlayerRole.Defender)
                 if (_turnCards.HasAnyCard)
                     if (_turnCards.AllCardsFilled)
-                        NextTurn();
+                        if (IsAllPlayersDone())
+                            NextTurn();
+        }
+
+        private bool IsAllPlayersDone()
+        {
+            foreach (var player in Players)
+                if (player.IsDone == false)
+                    return false;
+
+            return true;
         }
 
         public void GiveUp(Player player)
@@ -51,7 +60,7 @@ namespace GameEngine
                 return;
 
             var cards = _turnCards.GetAll();
-            player.Cards.AddRange(cards);
+            player.AddCards(cards);
 
             NextTurn();
         }
@@ -84,13 +93,13 @@ namespace GameEngine
         private void PlaceDeffenceCard(Player cardOwner, Card card, int position)
         {
             _turnCards.AddDeffenceCard(card, position);
-            cardOwner.Cards.Remove(card);
+            cardOwner.RemoveCard(card);
         }
 
         private void PlaceAttackCard(Player cardOwner, Card card)
         {
             _turnCards.AddAttackCard(card);
-            cardOwner.Cards.Remove(card);
+            cardOwner.RemoveCard(card);
         }
 
         private void SetStartRoles()
@@ -105,7 +114,7 @@ namespace GameEngine
         private Player ChooseFirstAttacker()
         {
             var playersAndTrumps = GetPlayerAndMinTrump();
-            var result = playersAndTrumps.OrderBy(x => x.minTrumpCard).FirstOrDefault();
+            var result = playersAndTrumps.OrderBy(x => x.minTrumpCard?.RankValue).FirstOrDefault();
 
             if (result.trumpCardOnwer == null)
                 return Players[0];
@@ -171,7 +180,7 @@ namespace GameEngine
                 return;
 
             foreach (var player in Players)
-                if (player.Cards.Count == 0)
+                if (player.Cards.Count() == 0)
                     Players.Remove(player);
             if (Players.Count < 2)
                 OnEndGame();
@@ -179,7 +188,7 @@ namespace GameEngine
 
         private int GetDeffencePlayerCardsCount()
         {
-            return Players.Where(player => player.Role == Player.PlayerRole.Defender).First().Cards.Count;
+            return Players.Where(player => player.Role == Player.PlayerRole.Defender).First().Cards.Count();
         }
 
         private void GiveCards()
@@ -191,7 +200,7 @@ namespace GameEngine
             {
                 var neededCardsCount = player.NeededCardsCount();
                 var cards = _deck.GetCards(neededCardsCount);
-                player.Cards.AddRange(cards);
+                player.AddCards(cards);
             }
         }
 
@@ -205,7 +214,7 @@ namespace GameEngine
 
         private void Translate(Player player, Card card)
         {
-            player.Cards.Remove(card);
+            player.RemoveCard(card);
             _turnCards.AddAttackCard(card);
             SwitchRoles();
             //_turnCards.Translate();
