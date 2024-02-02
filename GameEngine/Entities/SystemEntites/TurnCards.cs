@@ -1,6 +1,6 @@
-﻿using GameEngine.Entities;
+﻿using GameEngine.Entities.GameEntities;
 
-namespace GameEngine
+namespace GameEngine.Entities.SystemEntites
 {
     public class TurnCards
     {
@@ -16,6 +16,7 @@ namespace GameEngine
             _attackCards.Add(card);
             _deffenceCards.Add(null);
         }
+
         public void AddDeffenceCard(Card card, int position)
         {
             _deffenceCards[position] = card;
@@ -29,9 +30,9 @@ namespace GameEngine
 
         public bool AllCardsFilled => _attackCards.Count == _deffenceCards.Count;
 
-        public bool IsDeffenceStarted => _deffenceCards.Any();
+        public bool IsDeffenceStarted => _deffenceCards.Where(card => card != null).Count() > 0;
 
-        public bool HasCardWithRank(Card.Rank rank) => _attackCards.Concat(_deffenceCards).Select(card => card.RankValue == rank).Count() > 0;
+        public bool HasCardWithRank(Card.Rank rank) => _attackCards.Concat(_deffenceCards).Where(card => card?.RankValue == rank).Count() > 0;
 
         public bool IsCardFilled(int position) => _deffenceCards[position] != null;
 

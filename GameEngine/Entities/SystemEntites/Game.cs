@@ -1,23 +1,23 @@
-﻿using GameEngine.Entities;
+﻿using GameEngine.Entities.GameEntities;
 
-namespace GameEngine
+namespace GameEngine.Entities.SystemEntites
 {
     public class GameManager
     {
         private int _maxAttackCards = 6;
 
         private CardDeck _deck;
-        private TurnCards _turnCards = new TurnCards();
+        private TurnCards _turnCards;
 
         public readonly List<Player> Players;
 
-        public Card TrumpCard { get; private set; }
-        public Card.Suit TrumpSuit { get => TrumpCard.SuitValue; }
+        public virtual Card TrumpCard { get; private set; }
+        public virtual Card.Suit TrumpSuit { get => TrumpCard.SuitValue; }
 
         public event Action OnEndGame;
         public event Func<Player> OnPlayerEndedGame;
 
-        internal GameManager(List<Player> players, CardDeck deck, TurnCards turnCards)
+        public GameManager(List<Player> players, CardDeck deck, TurnCards turnCards)
         {
             _deck = deck;
             _turnCards = turnCards;
@@ -65,7 +65,7 @@ namespace GameEngine
             NextTurn();
         }
 
-        public void ThrowDeffenceCard(Player cardOnwer, Card card, int position)
+        public virtual void ThrowDeffenceCard(Player cardOnwer, Card card, int position)
         {
             if (cardOnwer.Role == Player.PlayerRole.Defender)
                 if (position < _turnCards.AttackCardsCount)
@@ -137,7 +137,7 @@ namespace GameEngine
             return player.Cards.Where(card => card.SuitValue == TrumpSuit).OrderBy(card => card.RankValue).FirstOrDefault();
         }
 
-        private void SwitchRoles()//todo вообще не нравится, как4ая-то дикая путаница выходит beginnerIndex выполняет аж 3 разных роли 
+        private void SwitchRoles()
         {
             var previousMainAttacker = GetPreviousMainAttacker();
             previousMainAttacker.Role = Player.PlayerRole.SubAttacker;
@@ -225,10 +225,11 @@ namespace GameEngine
             if (!_turnCards.IsDeffenceStarted)
                 return cardOwner.Role == Player.PlayerRole.MainAttacker;
 
-            if (_turnCards.AttackCardsCount < _maxAttackCards)
-                return true;
+            if (_turnCards.HasCardWithRank(card.RankValue))
+                if (_turnCards.AttackCardsCount < _maxAttackCards)
+                    return true;
 
-            return _turnCards.HasCardWithRank(card.RankValue);
+            return false;
         }
 
         private bool CanFill(Card fillingCard, Card candidate)

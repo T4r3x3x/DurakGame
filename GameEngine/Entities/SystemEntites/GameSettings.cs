@@ -1,8 +1,8 @@
-﻿using GameEngine.Entities;
+﻿using GameEngine.Entities.GameEntities;
 
 using System.ComponentModel.DataAnnotations;
 
-namespace GameEngine
+namespace GameEngine.Entities.SystemEntites
 {
     public class GameSettings
     {

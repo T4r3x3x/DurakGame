@@ -1,4 +1,4 @@
-﻿namespace GameEngine.Entities
+﻿namespace GameEngine.Entities.GameEntities
 {
     public partial class Player
     {
