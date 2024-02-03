@@ -1,27 +1,32 @@
 ﻿using GameEngine.Entities.GameEntities;
+using GameEngine.FirstPlayerChoosers;
 
 namespace GameEngine.Entities.SystemEntites
 {
-    public class GameManager
+    public class Game
     {
         private int _maxAttackCards = 6;
 
-        private CardDeck _deck;
-        private TurnCards _turnCards;
+        private readonly CardDeck _deck;
+        private readonly TurnCards _turnCards;
+        private readonly IBegginerChooser _firstPlayerChooser;
+
+        private int _beginnerIndex = 0;
 
         public readonly List<Player> Players;
 
         public virtual Card TrumpCard { get; private set; }
         public virtual Card.Suit TrumpSuit { get => TrumpCard.SuitValue; }
 
-        public event Action OnEndGame;
+        public event Action OnGameEnded;
         public event Func<Player> OnPlayerEndedGame;
 
-        public GameManager(List<Player> players, CardDeck deck, TurnCards turnCards)
+        public Game(List<Player> players, CardDeck deck, TurnCards turnCards, IBegginerChooser firstPlayerChooser)
         {
             _deck = deck;
             _turnCards = turnCards;
             Players = players;
+            _firstPlayerChooser = firstPlayerChooser;
         }
 
         #region API
@@ -29,14 +34,15 @@ namespace GameEngine.Entities.SystemEntites
         {
             SetTrump();
             GiveCards();
-            SetStartRoles();
+            ChooseBegginer();
         }
 
         private void SetTrump() => TrumpCard = _deck.GetCard();
 
-        public void EndTurn(Player player)
+        public void EndTurn(Player player) //todo перименовать и вынести проверку в отдельный метод
         {
-            player.IsDone = true;
+            if (_turnCards.AllCardsFilled)
+                player.IsDone = true;
 
             if (player.Role != Player.PlayerRole.Defender)
                 if (_turnCards.HasAnyCard)
@@ -49,7 +55,8 @@ namespace GameEngine.Entities.SystemEntites
         {
             foreach (var player in Players)
                 if (player.IsDone == false)
-                    return false;
+                    if (player.Role != Player.PlayerRole.Defender)
+                        return false;
 
             return true;
         }
@@ -102,42 +109,18 @@ namespace GameEngine.Entities.SystemEntites
             cardOwner.RemoveCard(card);
         }
 
-        private void SetStartRoles()
+        private void ChooseBegginer()
         {
-            foreach (var player in Players)
-                player.Role = Player.PlayerRole.SubAttacker;
-
-            var choosen = ChooseFirstAttacker();
+            var choosen = _firstPlayerChooser.ChooseFirstAttacker(Players, TrumpSuit);
             choosen.Role = Player.PlayerRole.MainAttacker;
+            _beginnerIndex = Players.IndexOf(choosen);
+
+            var defenderIndex = GetNextPlayerIndex(_beginnerIndex);
+
+            Players[defenderIndex].Role = Player.PlayerRole.Defender;
         }
 
-        private Player ChooseFirstAttacker()
-        {
-            var playersAndTrumps = GetPlayerAndMinTrump();
-            var result = playersAndTrumps.OrderBy(x => x.minTrumpCard?.RankValue).FirstOrDefault();
-
-            if (result.trumpCardOnwer == null)
-                return Players[0];
-
-            return result.trumpCardOnwer;
-        }
-
-        private List<(Player trumpCardOnwer, Card? minTrumpCard)> GetPlayerAndMinTrump()
-        {
-            List<(Player trumpCardOnwer, Card? minTrumpCard)> result = new();
-
-            foreach (var player in Players)
-                result.Add((player, GetMinTrumpCard(player)));
-
-            return result;
-        }
-
-        private Card? GetMinTrumpCard(Player player)
-        {
-            return player.Cards.Where(card => card.SuitValue == TrumpSuit).OrderBy(card => card.RankValue).FirstOrDefault();
-        }
-
-        private void SwitchRoles()
+        private void SwitchRoles()//todo если previousMainAttacker закончил ход, то приложение падает, так как он уже удалён
         {
             var previousMainAttacker = GetPreviousMainAttacker();
             previousMainAttacker.Role = Player.PlayerRole.SubAttacker;
@@ -146,6 +129,7 @@ namespace GameEngine.Entities.SystemEntites
 
             var newMainAttackerIndex = GetNextPlayerIndex(previousMainAttackerIndex);
             Players[newMainAttackerIndex].Role = Player.PlayerRole.MainAttacker;
+            _beginnerIndex = newMainAttackerIndex;
 
             var newDeffenderIndex = GetNextPlayerIndex(newMainAttackerIndex);
             Players[newDeffenderIndex].Role = Player.PlayerRole.Defender;
@@ -153,13 +137,16 @@ namespace GameEngine.Entities.SystemEntites
 
         private Player GetPreviousMainAttacker()
         {
-            return Players.Find(player => player.Role == Player.PlayerRole.MainAttacker)!;
+            if (_beginnerIndex >= Players.Count)
+                _beginnerIndex = 0;
+
+            return Players[_beginnerIndex];
         }
 
         private int GetNextPlayerIndex(int currentPlayerIndex)
         {
-            var nextPlayerIndex = currentPlayerIndex++;
-            if (nextPlayerIndex > Players.Count)
+            var nextPlayerIndex = ++currentPlayerIndex;
+            if (nextPlayerIndex >= Players.Count)
                 nextPlayerIndex = 0;
 
             return nextPlayerIndex;
@@ -179,11 +166,15 @@ namespace GameEngine.Entities.SystemEntites
             if (_deck.HasAnyCard())
                 return;
 
-            foreach (var player in Players)
-                if (player.Cards.Count() == 0)
-                    Players.Remove(player);
+            for (int i = 0; i < Players.Count; i++)
+                if (Players[i].Cards.Count() == 0)
+                {
+                    Players.Remove(Players[i]);
+                    OnPlayerEndedGame?.Invoke();
+                }
+
             if (Players.Count < 2)
-                OnEndGame();
+                OnGameEnded?.Invoke();
         }
 
         private int GetDeffencePlayerCardsCount()
