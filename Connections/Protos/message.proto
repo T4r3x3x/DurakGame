@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "Server.Protos";
+
+package Api;
+
+message Action{
+
+}
+
+message GameState{
+
+}
+
+message LobbyModel{
+	int 
+}
+
+message GameSetting{
+
+}

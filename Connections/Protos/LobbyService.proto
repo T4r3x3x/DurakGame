@@ -1,0 +1,62 @@
+syntax = "proto3";
+package Services;
+
+option csharp_namespace = "Services";
+
+import "google/protobuf/wrappers.proto";
+
+service LobbyService{ 
+	rpc CreateLobby(LobbyCreateRequest) returns (stream LobbyState);
+	rpc DeleteLobby(ActionRequest) returns (google.protobuf.empty);
+	rpc JoinLobby(ActionRequest) returns (stream LobbyState);
+	rpc LeaveLobby(ActionRequest) returns (google.protobuf.empty);//+
+	rpc StartGame(ActionRequest) returns (google.protobuf.empty);//+ 
+	rpc PrepareToGame(ActionRequest) returns (google.protobuf.empty);//+
+	rpc KickPlayer(KickPlayerRequest) returns (google.protobuf.empty);//+
+	rpc GetAllLobies(google.protobuf.empty) returns (stream LobbyList);
+}
+
+message LobbyCreateRequest{
+	string name = 1;
+	google.protobuf.StringValue password = 2;
+	string creatorId = 3;
+	LobbySetting settings = 4;
+}
+
+message LobbyState{
+	repeated PlayerState playersNicknames = 1;
+}
+
+message PlayerModel{
+	string nickname = 1;
+	bool areReady = 1;
+}
+
+message ActionRequest{
+	string lobbyId = 1; //как-то надо вернуть id лобби или переделать на имя лобби
+	string senderId = 2;
+}
+
+message KickPlayerRequest{
+	ActionRequest actionRequest = 1;
+	string kickingPlayerId = 2;
+}
+
+message LobbyList{
+	repeated LobbyModel lobbyList = 1;
+}
+
+message PlayerList{
+	repeated PlayerModel playerList = 1;
+}
+
+message LobbyModel{
+	LobbySetting lobby = 1;
+	PlayerList playerList = 2;
+}
+
+message LobbySetting{
+	int playersCount = 1;
+	int deckType = 2;
+	int playersStartCount = 3;
+}

@@ -1,0 +1,49 @@
+syntax = "proto3";
+package Services;
+
+option csharp_namespace = "Services";
+
+import "google/protobuf/wrappers.proto";
+
+//придумать как отослать стрим состояния игры (видимо надо сделать в лобби сервис (prepareToGame))
+
+service GameService{
+    rpc StartGame(google.protobuf.empty) returns google.protobuf.empty;
+    rpc EndTurn(ActionRequest) returns google.protobuf.empty;
+    rpc GiveUp(ActionRequest) returns google.protobuf.empty;
+    rpc ThrowDeffenceCard(ThrowCardRequest) returns google.protobuf.empty;
+    rpc ThrowAttackCard(ThrowCardRequest) returns google.protobuf.empty;
+}
+      
+message ThrowCardRequest{
+    ActionRequest ActionRequest =1;
+    Card card = 2;
+}
+
+message Card{
+    Rank rank =1;
+    suit suit =2;
+}
+
+enum Rank{
+    Two = 1;
+    Three = 2;
+    Four = 3; 
+    Five = 4;
+    Six = 5;
+    Seven = 6; 
+    Eight = 7; 
+    Nine = 8;
+    Ten = 9; 
+    Jack = 10; 
+    Queen = 11;
+    King = 12;
+    Ace = 13;
+}
+
+enum Suit{
+    Diamonds = 1;
+    Hearts = 2;
+    Clubs = 3;
+    Spades = 4;
+}

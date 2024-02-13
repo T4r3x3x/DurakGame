@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameEngineTests", "GameEngineTests\GameEngineTests.csproj", "{B3D4D530-1F26-4451-B1D8-521CFAA0B231}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connections", "Connections\Connections.csproj", "{2F954A2C-1383-4808-84F3-CC59E084D5BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{B3D4D530-1F26-4451-B1D8-521CFAA0B231}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3D4D530-1F26-4451-B1D8-521CFAA0B231}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3D4D530-1F26-4451-B1D8-521CFAA0B231}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F954A2C-1383-4808-84F3-CC59E084D5BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F954A2C-1383-4808-84F3-CC59E084D5BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F954A2C-1383-4808-84F3-CC59E084D5BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F954A2C-1383-4808-84F3-CC59E084D5BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
