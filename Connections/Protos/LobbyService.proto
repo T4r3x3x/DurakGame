@@ -1,19 +1,20 @@
 syntax = "proto3";
 package Services;
 
-option csharp_namespace = "Services";
-
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "Connections.Services";
 
 service LobbyService{ 
 	rpc CreateLobby(LobbyCreateRequest) returns (stream LobbyState);
-	rpc DeleteLobby(ActionRequest) returns (google.protobuf.empty);
+	rpc DeleteLobby(ActionRequest) returns (google.protobuf.Empty);
 	rpc JoinLobby(ActionRequest) returns (stream LobbyState);
-	rpc LeaveLobby(ActionRequest) returns (google.protobuf.empty);//+
-	rpc StartGame(ActionRequest) returns (google.protobuf.empty);//+ 
-	rpc PrepareToGame(ActionRequest) returns (google.protobuf.empty);//+
-	rpc KickPlayer(KickPlayerRequest) returns (google.protobuf.empty);//+
-	rpc GetAllLobies(google.protobuf.empty) returns (stream LobbyList);
+	rpc LeaveLobby(ActionRequest) returns (google.protobuf.Empty);
+	rpc StartGame(ActionRequest) returns (google.protobuf.Empty);
+	rpc PrepareToGame(ActionRequest) returns (google.protobuf.Empty);
+	rpc KickPlayer(KickPlayerRequest) returns (google.protobuf.Empty);
+	rpc GetAllLobies(google.protobuf.Empty) returns (stream LobbyList);
 }
 
 message LobbyCreateRequest{
@@ -24,16 +25,17 @@ message LobbyCreateRequest{
 }
 
 message LobbyState{
-	repeated PlayerState playersNicknames = 1;
+	string id = 1;
+	repeated PlayerModel players = 2;
 }
 
 message PlayerModel{
 	string nickname = 1;
-	bool areReady = 1;
+	bool areReady = 2;
 }
 
 message ActionRequest{
-	string lobbyId = 1; //как-то надо вернуть id лобби или переделать на имя лобби
+	string lobbyId = 1;
 	string senderId = 2;
 }
 
@@ -56,7 +58,7 @@ message LobbyModel{
 }
 
 message LobbySetting{
-	int playersCount = 1;
-	int deckType = 2;
-	int playersStartCount = 3;
+	int32 playersCount = 1;
+	int32 deckType = 2;
+	int32 playersStartCount = 3;
 }

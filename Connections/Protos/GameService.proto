@@ -1,49 +1,49 @@
 syntax = "proto3";
 package Services;
 
-option csharp_namespace = "Services";
+import "google/protobuf/empty.proto";
+import "Protos/LobbyService.proto";
 
-import "google/protobuf/wrappers.proto";
-
+option csharp_namespace = "Connections.Services";
 //придумать как отослать стрим состояния игры (видимо надо сделать в лобби сервис (prepareToGame))
 
 service GameService{
-    rpc StartGame(google.protobuf.empty) returns google.protobuf.empty;
-    rpc EndTurn(ActionRequest) returns google.protobuf.empty;
-    rpc GiveUp(ActionRequest) returns google.protobuf.empty;
-    rpc ThrowDeffenceCard(ThrowCardRequest) returns google.protobuf.empty;
-    rpc ThrowAttackCard(ThrowCardRequest) returns google.protobuf.empty;
+    rpc StartGame(google.protobuf.Empty) returns (google.protobuf.Empty);
+    rpc EndTurn(ActionRequest) returns (google.protobuf.Empty);
+    rpc GiveUp(ActionRequest) returns (google.protobuf.Empty);
+    rpc ThrowDeffenceCard(ThrowCardRequest) returns (google.protobuf.Empty);
+    rpc ThrowAttackCard(ThrowCardRequest) returns (google.protobuf.Empty);
 }
       
 message ThrowCardRequest{
-    ActionRequest ActionRequest =1;
+    ActionRequest ActionRequest = 1;
     Card card = 2;
 }
 
 message Card{
-    Rank rank =1;
-    suit suit =2;
+    Rank rank = 1;
+    Suit suit = 2;
 }
 
 enum Rank{
-    Two = 1;
-    Three = 2;
-    Four = 3; 
-    Five = 4;
-    Six = 5;
-    Seven = 6; 
-    Eight = 7; 
-    Nine = 8;
-    Ten = 9; 
-    Jack = 10; 
-    Queen = 11;
-    King = 12;
-    Ace = 13;
+    Two = 0;
+    Three = 1;
+    Four = 2; 
+    Five = 3;
+    Six = 4;
+    Seven = 5; 
+    Eight = 6; 
+    Nine = 7;
+    Ten = 8; 
+    Jack = 9; 
+    Queen = 10;
+    King = 11;
+    Ace = 12;
 }
 
 enum Suit{
-    Diamonds = 1;
-    Hearts = 2;
-    Clubs = 3;
-    Spades = 4;
+    Diamonds = 0;
+    Hearts = 1;
+    Clubs = 2;
+    Spades = 3;
 }
