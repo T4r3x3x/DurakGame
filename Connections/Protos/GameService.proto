@@ -7,17 +7,28 @@ import "Protos/LobbyService.proto";
 option csharp_namespace = "Connections.Services";
 //придумать как отослать стрим состояния игры (видимо надо сделать в лобби сервис (prepareToGame))
 
+//отсылать Id игры
 service GameService{
-    rpc StartGame(google.protobuf.Empty) returns (google.protobuf.Empty);
+    rpc StartGame(GameId) returns (google.protobuf.Empty);
     rpc EndTurn(ActionRequest) returns (google.protobuf.Empty);
     rpc GiveUp(ActionRequest) returns (google.protobuf.Empty);
-    rpc ThrowDeffenceCard(ThrowCardRequest) returns (google.protobuf.Empty);
-    rpc ThrowAttackCard(ThrowCardRequest) returns (google.protobuf.Empty);
+    rpc ThrowDeffenceCard(ThrowDefenceCardRequest) returns (google.protobuf.Empty);
+    rpc ThrowAttackCard(ThrowAttackCardRequest) returns (google.protobuf.Empty);
 }
       
-message ThrowCardRequest{
+message ThrowAttackCardRequest{
     ActionRequest ActionRequest = 1;
     Card card = 2;
+}
+
+message ThrowDefenceCardRequest{
+    ActionRequest ActionRequest = 1;
+    Card card = 2;
+    int32 position = 3;
+}
+
+message GameId{
+    string gameId = 1;
 }
 
 message Card{

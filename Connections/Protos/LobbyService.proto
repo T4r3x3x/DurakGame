@@ -9,12 +9,12 @@ option csharp_namespace = "Connections.Services";
 service LobbyService{ 
 	rpc CreateLobby(LobbyCreateRequest) returns (stream LobbyState);
 	rpc DeleteLobby(ActionRequest) returns (google.protobuf.Empty);
-	rpc JoinLobby(ActionRequest) returns (stream LobbyState);
+	rpc JoinLobby(JoinRequest) returns (stream LobbyState);
 	rpc LeaveLobby(ActionRequest) returns (google.protobuf.Empty);
 	rpc StartGame(ActionRequest) returns (google.protobuf.Empty);
 	rpc PrepareToGame(ActionRequest) returns (google.protobuf.Empty);
 	rpc KickPlayer(KickPlayerRequest) returns (google.protobuf.Empty);
-	rpc GetAllLobies(google.protobuf.Empty) returns (stream LobbyList);
+	rpc GetAllLobies(google.protobuf.Empty) returns (LobbyList);
 }
 
 message LobbyCreateRequest{
@@ -25,13 +25,18 @@ message LobbyCreateRequest{
 }
 
 message LobbyState{
-	string id = 1;
+	string id = 1;//добавить сеттингс?
 	repeated PlayerModel players = 2;
 }
 
 message PlayerModel{
 	string nickname = 1;
 	bool areReady = 2;
+}
+
+message JoinRequest{
+	ActionRequest actionRequest = 1;
+	google.protobuf.StringValue password = 2;
 }
 
 message ActionRequest{
@@ -53,12 +58,18 @@ message PlayerList{
 }
 
 message LobbyModel{
-	LobbySetting lobby = 1;
-	PlayerList playerList = 2;
+	string id = 1;
+	LobbySetting settings = 2;
+	PlayerList playerList = 3;
 }
 
 message LobbySetting{
 	int32 playersCount = 1;
-	int32 deckType = 2;
+	DeckType deckType = 2;
 	int32 playersStartCount = 3;
+}
+
+enum DeckType{
+	common = 0;
+	extended = 1;
 }

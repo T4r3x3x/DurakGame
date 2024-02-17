@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csp
 		{612EC860-5B3D-4B27-8E3F-4FABB68A6FA5} = {612EC860-5B3D-4B27-8E3F-4FABB68A6FA5}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameEngineTests", "GameEngineTests\GameEngineTests.csproj", "{B3D4D530-1F26-4451-B1D8-521CFAA0B231}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "GameEngineTests\Tests.csproj", "{B3D4D530-1F26-4451-B1D8-521CFAA0B231}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connections", "Connections\Connections.csproj", "{2F954A2C-1383-4808-84F3-CC59E084D5BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Connections", "Connections\Connections.csproj", "{2F954A2C-1383-4808-84F3-CC59E084D5BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,85 @@
+﻿using Connections.Services;
+
+using GameEngine.Entities.GameEntities;
+using GameEngine.Entities.SystemEntites;
+
+using Google.Protobuf.WellKnownTypes;
+
+using Grpc.Core;
+
+using Server.Entities;
+
+using GameEntities = GameEngine.Entities.GameEntities;
+
+namespace Server.Services
+{
+    public class GameService : Connections.Services.GameService.GameServiceBase
+    {
+        public async Task StartGame(Game game) => game.StartGame();
+
+        public override Task<Empty> EndTurn(ActionRequest request, ServerCallContext context)
+        {
+            (var game, var player) = GetGameEntities(request.LobbyId, request.LobbyId);
+            game!.EndTurn(player);
+            return base.EndTurn(request, context);
+        }
+
+        public override Task<Empty> GiveUp(ActionRequest request, ServerCallContext context)
+        {
+            (var game, var player) = GetGameEntities(request.LobbyId, request.LobbyId);
+            game!.GiveUp(player);
+            return base.GiveUp(request, context);
+        }
+
+        public override Task<Empty> StartGame(GameId request, ServerCallContext context)
+        {
+            return base.StartGame(request, context);
+        }
+
+        public override Task<Empty> ThrowAttackCard(ThrowAttackCardRequest request, ServerCallContext context)
+        {
+            (var game, var player) = GetGameEntities(request.ActionRequest.LobbyId, request.ActionRequest.LobbyId);
+            GameEntities.Card card = FindCard(request.Card, player);
+            game!.ThrowAttackCard(player, card);
+            return base.ThrowAttackCard(request, context);
+        }
+
+        private GameEntities.Card FindCard(Connections.Services.Card card, Player player)
+        {
+            var _card = player.Cards.Where(x => x.RankValue == (GameEntities.Card.Rank)card.Rank && x.SuitValue == (GameEntities.Card.Suit)card.Suit).FirstOrDefault();
+            if (_card != null)
+                new RpcException(new Status(StatusCode.NotFound, $"Can't find a card [{card.Rank},{card.Suit}]"));
+
+            return _card!;
+        }
+
+        public override Task<Empty> ThrowDeffenceCard(ThrowDefenceCardRequest request, ServerCallContext context)
+        {
+            (var game, var player) = GetGameEntities(request.ActionRequest.LobbyId, request.ActionRequest.LobbyId);
+            GameEntities.Card card = FindCard(request.Card, player);
+            game.ThrowDeffenceCard(player, card, request.Position);
+            return base.ThrowDeffenceCard(request, context);
+        }
+
+        private (Game, Player) GetGameEntities(string lobbyId, string userId)
+        {
+            var lobby = Resources.GetLobby(lobbyId);
+            var user = Resources.GetUser(userId);
+            var player = GetGameSidePlayer(lobby, user);
+
+            if (lobby.Game == null)
+                throw new RpcException(new Status(StatusCode.NotFound, $"Can't find a game in this lobby: {lobbyId}"));
+
+            return (lobby.Game, player);
+        }
+
+
+        private GameEntities.Player GetGameSidePlayer(Lobby lobby, User user)
+        {
+            var index = lobby.Players.IndexOf(user);
+            var gamePlayer = lobby.Game!.Players[index];
+
+            return gamePlayer;
+        }
+    }
+}

@@ -1,4 +1,4 @@
-﻿namespace GameEngine.Entities.GameEntities
+﻿namespace GameEngine.Entities.SystemEntites
 {
     public enum DeckType
     {

@@ -6,7 +6,7 @@ import "google/protobuf/empty.proto";
 option csharp_namespace = "Connections.Services";
 
 service ConnectionService{
-	rpc Connect(LoginRequest) returns (PlayerId);	
+	rpc Connect(LoginRequest) returns (PlayerId);	//отправить все лобби
 	rpc Disconnect(PlayerId) returns (google.protobuf.Empty);
 }
 

@@ -22,4 +22,8 @@
     <ProjectReference Include="..\GameEngine\GameEngine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ServerTests\" />
+  </ItemGroup>
+
 </Project>
