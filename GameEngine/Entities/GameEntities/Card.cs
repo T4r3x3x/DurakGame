@@ -11,6 +11,10 @@
             RankValue = rank;
         }
 
+        public static bool operator ==(Card a, Card b) => a.RankValue == b.RankValue && a.SuitValue == b.SuitValue;
+
+        public static bool operator !=(Card a, Card b) => a.RankValue != b.RankValue || a.SuitValue != b.SuitValue;
+
         public enum Suit
         {
             Diamonds,

@@ -1,4 +1,6 @@
-﻿using Connections.Services;
+﻿using AutoMapper;
+
+using Connections.Services;
 
 using GameEngine.Entities.GameEntities;
 using GameEngine.Entities.SystemEntites;
@@ -15,6 +17,13 @@ namespace Server.Services
 {
     public class GameService : Connections.Services.GameService.GameServiceBase
     {
+        private readonly IMapper _mapper;
+
+        public GameService(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
+
         public async Task StartGame(Game game) => game.StartGame();
 
         public override Task<Empty> EndTurn(ActionRequest request, ServerCallContext context)
@@ -44,13 +53,14 @@ namespace Server.Services
             return base.ThrowAttackCard(request, context);
         }
 
-        private GameEntities.Card FindCard(Connections.Services.Card card, Player player)
+        private GameEntities.Card FindCard(Connections.Services.Card messageCard, Player player)
         {
-            var _card = player.Cards.Where(x => x.RankValue == (GameEntities.Card.Rank)card.Rank && x.SuitValue == (GameEntities.Card.Suit)card.Suit).FirstOrDefault();
-            if (_card != null)
-                new RpcException(new Status(StatusCode.NotFound, $"Can't find a card [{card.Rank},{card.Suit}]"));
+            var playingCard = _mapper.Map<GameEntities.Card>(messageCard);
+            var card = player.Cards.Where(x => x == playingCard).SingleOrDefault();
+            if (card == null)
+                new RpcException(new Status(StatusCode.NotFound, $"Can't find a card [{messageCard.Rank},{messageCard.Suit}]"));
 
-            return _card!;
+            return card!;
         }
 
         public override Task<Empty> ThrowDeffenceCard(ThrowDefenceCardRequest request, ServerCallContext context)

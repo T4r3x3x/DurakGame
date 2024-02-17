@@ -400,7 +400,6 @@ namespace GameEngineTests.GameEngineTest
         }
         #endregion
 
-
         #region Tools
 
         private (Game gameManager, TurnCards turnCards, List<Player> players) InstanceGameWithEmptyCardDeck(int playersCount)

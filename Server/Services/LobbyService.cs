@@ -12,6 +12,9 @@ using Grpc.Core;
 
 using Server.Entities;
 
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+
 namespace Server.Services
 {
     public class LobbyService : Connections.Services.LobbyService.LobbyServiceBase
@@ -37,11 +40,30 @@ namespace Server.Services
                 Owner = creator,
                 Name = request.Name,
                 Password = request.Password,
-                Players = new List<User>(),
+                Players = new ObservableCollection<User>(),
                 Settings = settings
             };
+            lobby.Players.Add(creator);
             Resources.Lobbies.Add(lobby.Guid, lobby);
 
+            lobby.Players.CollectionChanged += OnLobbyStateChangedBehavior;
+
+            //write
+            //сделать отдельный сервис который стримит дату без контекста. Заебашить try catch{} если пользователь отключился просто дисконектим его 
+
+
+
+
+            return null;
+        }
+
+        public void OnLobbyStateChangedBehavior(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+
+        }
+
+        public void Write(IServerStreamWriter<LobbyState> responseStream)
+        {
 
         }
 
@@ -77,7 +99,9 @@ namespace Server.Services
 
             lobby!.Players.Add(player!);
 
-            return
+            //write
+
+            return null;
         }
 
         public override Task<Empty> KickPlayer(KickPlayerRequest request, ServerCallContext context)

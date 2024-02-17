@@ -1,15 +1,17 @@
 ﻿using GameEngine.Entities.SystemEntites;
 
+using System.Collections.ObjectModel;
+
 namespace Server.Entities
 {
     public class Lobby
     {
-        public required Guid Guid { get; set; }
-        public required string Name { get; set; }
-        public string? Password { get; set; }
-        public required GameSettings Settings { get; set; }
-        public required User Owner { get; set; }
-        public required List<User> Players { get; set; }
+        public required Guid Guid { get; init; }
+        public required string Name { get; init; }
+        public string? Password { get; init; }
+        public required GameSettings Settings { get; init; }
+        public required User Owner { get; init; }
+        public required ObservableCollection<User> Players { get; init; }
         public Game? Game { get; set; }
     }
 }

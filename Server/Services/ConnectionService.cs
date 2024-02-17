@@ -10,6 +10,8 @@ namespace Server.Services
 {
     public class ConnectionService : Connections.Services.ConnectionService.ConnectionServiceBase
     {
+        private static readonly Empty empty = new Empty();
+
         public override Task<PlayerId> Connect(LoginRequest request, ServerCallContext context)
         {
             Guid playerId = Guid.NewGuid();
@@ -21,8 +23,9 @@ namespace Server.Services
 
         public override Task<Empty> Disconnect(PlayerId request, ServerCallContext context)
         {
+            var user = Resources.GetUser(request.Id);
             Resources.Users.Remove(Guid.Parse(request.Id));
-            return base.Disconnect(request, context);
+            return Task.FromResult(empty);
         }
     }
 }
