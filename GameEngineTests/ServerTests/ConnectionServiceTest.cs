@@ -13,12 +13,13 @@ namespace Tests.ServerTests
     internal class ConnectionServiceTest
     {
         private ConnectionService _connectionService;
+        private ConnectionResources _resources = new();
         private string _nickName = "TEST";
 
         [SetUp]
         public void SetUp()
         {
-            _connectionService = new();
+            _connectionService = new(_resources);
         }
 
         [Test]
@@ -34,7 +35,7 @@ namespace Tests.ServerTests
             #endregion
 
             #region Assert
-            var user = Resources.GetUser(id.Id);
+            var user = _resources.GetUser(id.Id);
             Assert.IsTrue(user.NickName == _nickName);
             #endregion
         }
@@ -43,8 +44,8 @@ namespace Tests.ServerTests
         public void USER_TRYING_DISCONNECT_SHOULD_DO_IT()
         {
             #region Arrange
-            var guid = AddNewUser();
-            var playerId = new PlayerId() { Id = guid.ToString() };
+            var user = Helpers.AddNewUser(_nickName, _resources);
+            var playerId = new PlayerId() { Id = user.ToString() };
             var mockContext = new Mock<ServerCallContext>();
             #endregion
 
@@ -53,16 +54,15 @@ namespace Tests.ServerTests
             #endregion
 
             #region Assert
-            var searchResult = Resources.Users.TryGetValue(guid, out var temp);
+            var searchResult = _resources.Users.TryGetValue(user.Guid, out var temp);
             Assert.IsTrue(searchResult == false);
             #endregion
         }
 
         [Test]
-        public void USER_TRYING_DISCONNECT_SHOULD_THROW_EXCEPTION()
+        public void USER_TRYING_DISCONNECT_SENDING_WRONG_ID_SHOULD_THROW_EXCEPTION()
         {
-            #region Arrange
-            var guid = AddNewUser();
+            #region Arrange            
             var wrongGuid = Guid.NewGuid();
             var playerId = new PlayerId() { Id = wrongGuid.ToString() };
             var mockContext = new Mock<ServerCallContext>();
@@ -82,14 +82,5 @@ namespace Tests.ServerTests
             }
             #endregion
         }
-
-        private Guid AddNewUser()
-        {
-            Guid guid = Guid.NewGuid();
-            User user = new User() { Guid = guid, NickName = _nickName };
-            Resources.Users.Add(guid, user);
-            return guid;
-        }
-
     }
 }

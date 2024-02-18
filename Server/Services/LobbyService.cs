@@ -21,18 +21,21 @@ namespace Server.Services
     {
         private readonly IMapper _mapper;
         private readonly GameService _gameService;
+        private readonly ConnectionResources _resources;
+        private static readonly Empty _empty = new();
 
-        public LobbyService(IMapper mapper, GameService gameService)
+        public LobbyService(IMapper mapper, GameService gameService, ConnectionResources resources)
         {
             _mapper = mapper;
             _gameService = gameService;
+            _resources = resources;
         }
 
         public override Task CreateLobby(LobbyCreateRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
         {
             GameSettings settings = _mapper.Map<GameSettings>(request.Settings);
 
-            var creator = Resources.GetUser(request.CreatorId);
+            var creator = _resources.GetUser(request.CreatorId);
 
             Lobby lobby = new Lobby()
             {
@@ -44,9 +47,9 @@ namespace Server.Services
                 Settings = settings
             };
             lobby.Players.Add(creator);
-            Resources.Lobbies.Add(lobby.Guid, lobby);
+            _resources.Lobbies.Add(lobby.Guid, lobby);
 
-            lobby.Players.CollectionChanged += OnLobbyStateChangedBehavior;
+            //lobby.Players.CollectionChanged += OnLobbyStateChangedBehavior;
 
             //write
             //сделать отдельный сервис который стримит дату без контекста. Заебашить try catch{} если пользователь отключился просто дисконектим его 
@@ -69,28 +72,28 @@ namespace Server.Services
 
         public override Task<Empty> DeleteLobby(ActionRequest request, ServerCallContext context)
         {
-            var guid = Resources.ParseGuid(request.LobbyId);
-            Resources.Lobbies.Remove(guid);
-            return base.DeleteLobby(request, context);
+            var guid = ConnectionResources.ParseGuid(request.LobbyId);
+            _resources.Lobbies.Remove(guid);
+            return Task.FromResult(_empty);
         }
 
         public override Task<LobbyList> GetAllLobies(Empty request, ServerCallContext context)
         {
             LobbyList lobbyList = new LobbyList();
-            lobbyList.LobbyList_.AddRange(Resources.Lobbies.Select(x => _mapper.Map<LobbyModel>(x.Value)));
-            return base.GetAllLobies(request, context);
+            lobbyList.LobbyList_.AddRange(_resources.Lobbies.Select(x => _mapper.Map<LobbyModel>(x.Value)));
+            return Task.FromResult(lobbyList);
         }
 
         public override Task JoinLobby(JoinRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
         {
-            var lobbyId = Resources.ParseGuid(request.ActionRequest.LobbyId);
-            var playerId = Resources.ParseGuid(request.ActionRequest.SenderId);
+            var lobbyId = ConnectionResources.ParseGuid(request.ActionRequest.LobbyId);
+            var playerId = ConnectionResources.ParseGuid(request.ActionRequest.SenderId);
 
-            var playerSearchResult = Resources.Users.TryGetValue(playerId, out var player);
+            var playerSearchResult = _resources.Users.TryGetValue(playerId, out var player);
             if (!playerSearchResult)
                 throw new RpcException(new Status(StatusCode.NotFound, $"Can't find a player with id: {playerId}"));
 
-            var lobbySearchResult = Resources.Lobbies.TryGetValue(lobbyId, out var lobby);
+            var lobbySearchResult = _resources.Lobbies.TryGetValue(lobbyId, out var lobby);
             if (!lobbySearchResult)
                 throw new RpcException(new Status(StatusCode.NotFound, $"Can't find a lobby with id: {lobbyId}"));
 
@@ -106,39 +109,39 @@ namespace Server.Services
 
         public override Task<Empty> KickPlayer(KickPlayerRequest request, ServerCallContext context)
         {
-            var lobby = Resources.GetLobby(request.ActionRequest.LobbyId);
-            var kickingPlayer = Resources.GetUser(request.KickingPlayerId);
-            var kicker = Resources.GetUser(request.ActionRequest.SenderId);
+            var lobby = _resources.GetLobby(request.ActionRequest.LobbyId);
+            var kickingPlayer = _resources.GetUser(request.KickingPlayerId);
+            var kicker = _resources.GetUser(request.ActionRequest.SenderId);
 
             if (kicker != lobby!.Owner)
                 throw new RpcException(new Status(StatusCode.PermissionDenied, "You are not onwer of the lobby!"));
 
             lobby!.Players.Remove(kickingPlayer!);
 
-            return base.KickPlayer(request, context);
+            return Task.FromResult(_empty);
         }
 
         public override Task<Empty> LeaveLobby(ActionRequest request, ServerCallContext context)
         {
-            var lobby = Resources.GetLobby(request.LobbyId);
-            var player = Resources.GetUser(request.SenderId);
+            var lobby = _resources.GetLobby(request.LobbyId);
+            var player = _resources.GetUser(request.SenderId);
 
             lobby!.Players.Remove(player!);
-            return base.LeaveLobby(request, context);
+            return Task.FromResult(_empty);
         }
 
         public override Task<Empty> PrepareToGame(ActionRequest request, ServerCallContext context)
         {
-            var lobby = Resources.GetLobby(request.LobbyId);
-            var player = Resources.GetUser(request.SenderId);
+            var lobby = _resources.GetLobby(request.LobbyId);
+            var player = _resources.GetUser(request.SenderId);
             lobby.Players.Where(x => x == player).First().AreReady = true;
 
-            return base.PrepareToGame(request, context);
+            return Task.FromResult(_empty);
         }
 
         public override Task<Empty> StartGame(ActionRequest request, ServerCallContext context)
         {
-            var lobby = Resources.GetLobby(request.LobbyId);
+            var lobby = _resources.GetLobby(request.LobbyId);
             var AreEverybodyIsReady = lobby.Players.Where(x => x.AreReady).Count() == lobby.Players.Count();
             if (!AreEverybodyIsReady)
                 return Task.FromResult(new Empty());
@@ -147,7 +150,7 @@ namespace Server.Services
             lobby.Game = gameFactory.GetGameManager(lobby.Settings, new FisherYatesShuffler<GameEngine.Entities.GameEntities.Card>());
 
             _gameService.StartGame(lobby.Game);
-            return base.StartGame(request, context);
+            return Task.FromResult(_empty);
         }
     }
 }

@@ -11,20 +11,26 @@ namespace Server.Services
     public class ConnectionService : Connections.Services.ConnectionService.ConnectionServiceBase
     {
         private static readonly Empty empty = new Empty();
+        private readonly ConnectionResources _resources;
+
+        public ConnectionService(ConnectionResources resources)
+        {
+            _resources = resources;
+        }
 
         public override Task<PlayerId> Connect(LoginRequest request, ServerCallContext context)
         {
             Guid playerId = Guid.NewGuid();
             User player = new User { Guid = playerId, NickName = request.NickName };
-            Resources.Users.Add(playerId, player);
+            _resources.Users.Add(playerId, player);
 
             return Task.FromResult(new PlayerId { Id = playerId.ToString() });
         }
 
         public override Task<Empty> Disconnect(PlayerId request, ServerCallContext context)
         {
-            var user = Resources.GetUser(request.Id);
-            Resources.Users.Remove(Guid.Parse(request.Id));
+            var user = _resources.GetUser(request.Id);
+            _resources.Users.Remove(Guid.Parse(request.Id));
             return Task.FromResult(empty);
         }
     }

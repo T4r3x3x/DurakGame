@@ -18,10 +18,12 @@ namespace Server.Services
     public class GameService : Connections.Services.GameService.GameServiceBase
     {
         private readonly IMapper _mapper;
+        private readonly ConnectionResources _resources;
 
-        public GameService(IMapper mapper)
+        public GameService(IMapper mapper, ConnectionResources resources)
         {
             _mapper = mapper;
+            _resources = resources;
         }
 
         public async Task StartGame(Game game) => game.StartGame();
@@ -73,8 +75,8 @@ namespace Server.Services
 
         private (Game, Player) GetGameEntities(string lobbyId, string userId)
         {
-            var lobby = Resources.GetLobby(lobbyId);
-            var user = Resources.GetUser(userId);
+            var lobby = _resources.GetLobby(lobbyId);
+            var user = _resources.GetUser(userId);
             var player = GetGameSidePlayer(lobby, user);
 
             if (lobby.Game == null)

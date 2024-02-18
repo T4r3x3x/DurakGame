@@ -2,12 +2,12 @@
 
 namespace Server.Entities
 {
-    public static class Resources
+    public class ConnectionResources
     {
-        public static Dictionary<Guid, User> Users { get; set; } = new(); //todo клиент может не вызвать disconnect, удалять автоматически через сутки после подключения? (квартц?)
-        public static Dictionary<Guid, Lobby> Lobbies { get; set; } = new();
+        public Dictionary<Guid, User> Users { get; set; } = new(); //todo клиент может не вызвать disconnect, удалять автоматически через сутки после подключения? (квартц?)
+        public Dictionary<Guid, Lobby> Lobbies { get; set; } = new();
 
-        public static User GetUser(string guidString)
+        public User GetUser(string guidString)
         {
             var guid = ParseGuid(guidString);
             var searchResult = Users.TryGetValue(guid, out var player);
@@ -17,12 +17,12 @@ namespace Server.Entities
             return player!;
         }
         //todo написать абстракцию для обоих методов? 
-        public static Lobby GetLobby(string guidString)
+        public Lobby GetLobby(string guidString)
         {
             var guid = ParseGuid(guidString);
             var searchResult = Lobbies.TryGetValue(guid, out var lobby);
             if (!searchResult)
-                throw new RpcException(new Status(StatusCode.NotFound, $"Can't find a player with id: {guid}"));
+                throw new RpcException(new Status(StatusCode.NotFound, $"Can't find a lobby with id: {guid}"));
 
             return lobby!;
         }
