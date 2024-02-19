@@ -19,6 +19,7 @@ namespace Server.Services
     {
         private readonly IMapper _mapper;
         private readonly ConnectionResources _resources;
+        private static readonly Empty _empty = new Empty();
 
         public GameService(IMapper mapper, ConnectionResources resources)
         {
@@ -32,14 +33,14 @@ namespace Server.Services
         {
             (var game, var player) = GetGameEntities(request.LobbyId, request.LobbyId);
             game!.EndTurn(player);
-            return base.EndTurn(request, context);
+            return Task.FromResult(_empty);
         }
 
         public override Task<Empty> GiveUp(ActionRequest request, ServerCallContext context)
         {
             (var game, var player) = GetGameEntities(request.LobbyId, request.LobbyId);
             game!.GiveUp(player);
-            return base.GiveUp(request, context);
+            return Task.FromResult(_empty);
         }
 
         public override Task<Empty> StartGame(GameId request, ServerCallContext context)
@@ -52,9 +53,16 @@ namespace Server.Services
             (var game, var player) = GetGameEntities(request.ActionRequest.LobbyId, request.ActionRequest.LobbyId);
             GameEntities.Card card = FindCard(request.Card, player);
             game!.ThrowAttackCard(player, card);
-            return base.ThrowAttackCard(request, context);
+            return Task.FromResult(_empty);
         }
 
+        public override Task<Empty> ThrowDeffenceCard(ThrowDefenceCardRequest request, ServerCallContext context)
+        {
+            (var game, var player) = GetGameEntities(request.ActionRequest.LobbyId, request.ActionRequest.LobbyId);
+            GameEntities.Card card = FindCard(request.Card, player);
+            game.ThrowDeffenceCard(player, card, request.Position);
+            return Task.FromResult(_empty);
+        }
         private GameEntities.Card FindCard(Connections.Services.Card messageCard, Player player)
         {
             var playingCard = _mapper.Map<GameEntities.Card>(messageCard);
@@ -63,14 +71,6 @@ namespace Server.Services
                 new RpcException(new Status(StatusCode.NotFound, $"Can't find a card [{messageCard.Rank},{messageCard.Suit}]"));
 
             return card!;
-        }
-
-        public override Task<Empty> ThrowDeffenceCard(ThrowDefenceCardRequest request, ServerCallContext context)
-        {
-            (var game, var player) = GetGameEntities(request.ActionRequest.LobbyId, request.ActionRequest.LobbyId);
-            GameEntities.Card card = FindCard(request.Card, player);
-            game.ThrowDeffenceCard(player, card, request.Position);
-            return base.ThrowDeffenceCard(request, context);
         }
 
         private (Game, Player) GetGameEntities(string lobbyId, string userId)
@@ -84,7 +84,6 @@ namespace Server.Services
 
             return (lobby.Game, player);
         }
-
 
         private GameEntities.Player GetGameSidePlayer(Lobby lobby, User user)
         {

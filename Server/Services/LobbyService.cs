@@ -67,7 +67,7 @@ namespace Server.Services
             return Task.FromResult(lobbyList);
         }
 
-        public override Task JoinLobby(JoinRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
+        public override async Task JoinLobby(JoinRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
         {
             var lobbyId = ConnectionResources.ParseGuid(request.ActionRequest.LobbyId);
             var playerId = ConnectionResources.ParseGuid(request.ActionRequest.SenderId);
@@ -85,9 +85,9 @@ namespace Server.Services
 
             lobby!.Players.Add(player!);
 
-            //write
-
-            return null;
+            var lobbyState = _mapper.Map<LobbyState>(lobby);
+            while (!context.CancellationToken.IsCancellationRequested)
+                await responseStream.WriteAsync(lobbyState);
         }
 
         public override Task<Empty> KickPlayer(KickPlayerRequest request, ServerCallContext context)
@@ -117,7 +117,7 @@ namespace Server.Services
         {
             var lobby = _resources.GetLobby(request.LobbyId);
             var player = _resources.GetUser(request.SenderId);
-            lobby.Players.Where(x => x == player).First().AreReady = true;
+            lobby.Players.Where(x => x == player).Single().AreReady = true;
 
             return Task.FromResult(_empty);
         }
@@ -126,6 +126,7 @@ namespace Server.Services
         {
             var lobby = _resources.GetLobby(request.LobbyId);
             var AreEverybodyIsReady = lobby.Players.Where(x => x.AreReady).Count() == lobby.Players.Count();
+
             if (!AreEverybodyIsReady)
                 return Task.FromResult(new Empty());
 
