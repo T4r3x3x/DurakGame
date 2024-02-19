@@ -13,7 +13,6 @@ using Grpc.Core;
 using Server.Entities;
 
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 
 namespace Server.Services
 {
@@ -31,7 +30,7 @@ namespace Server.Services
             _resources = resources;
         }
 
-        public override Task CreateLobby(LobbyCreateRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
+        public override async Task CreateLobby(LobbyCreateRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
         {
             GameSettings settings = _mapper.Map<GameSettings>(request.Settings);
 
@@ -49,25 +48,9 @@ namespace Server.Services
             lobby.Players.Add(creator);
             _resources.Lobbies.Add(lobby.Guid, lobby);
 
-            //lobby.Players.CollectionChanged += OnLobbyStateChangedBehavior;
-
-            //write
-            //сделать отдельный сервис который стримит дату без контекста. Заебашить try catch{} если пользователь отключился просто дисконектим его 
-
-
-
-
-            return null;
-        }
-
-        public void OnLobbyStateChangedBehavior(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-
-        }
-
-        public void Write(IServerStreamWriter<LobbyState> responseStream)
-        {
-
+            var lobbyState = _mapper.Map<LobbyState>(lobby);
+            while (!context.CancellationToken.IsCancellationRequested)
+                await responseStream.WriteAsync(lobbyState);
         }
 
         public override Task<Empty> DeleteLobby(ActionRequest request, ServerCallContext context)

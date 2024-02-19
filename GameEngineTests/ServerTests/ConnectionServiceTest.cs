@@ -45,7 +45,7 @@ namespace Tests.ServerTests
         {
             #region Arrange
             var user = Helpers.AddNewUser(_nickName, _resources);
-            var playerId = new PlayerId() { Id = user.ToString() };
+            var playerId = new PlayerId() { Id = user.Guid.ToString() };
             var mockContext = new Mock<ServerCallContext>();
             #endregion
 

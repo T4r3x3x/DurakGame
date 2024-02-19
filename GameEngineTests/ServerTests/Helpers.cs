@@ -12,10 +12,10 @@ namespace Tests.ServerTests
             return user;
         }
 
-        internal static Lobby AddNewLobby(User user, ConnectionResources resources)
+        internal static Lobby AddNewLobby(User user, ConnectionResources resources, string name = "", string password = "")
         {
-            Guid guid = new Guid();
-            Lobby lobby = new Lobby() { Guid = guid, Name = string.Empty, Owner = user, Players = null, Settings = null };
+            Guid guid = Guid.NewGuid();
+            Lobby lobby = new Lobby() { Guid = guid, Name = name, Owner = user, Password = password, Players = new(), Settings = null };
             resources.Lobbies.Add(guid, lobby);
             return lobby;
         }

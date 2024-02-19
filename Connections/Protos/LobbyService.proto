@@ -59,8 +59,9 @@ message PlayerList{
 
 message LobbyModel{
 	string id = 1;
-	LobbySetting settings = 2;
-	PlayerList playerList = 3;
+	string name = 2;
+	LobbySetting settings = 3;
+	PlayerList playerList = 4;
 }
 
 message LobbySetting{
