@@ -21,7 +21,7 @@ namespace Server.Services
         private readonly IMapper _mapper;
         private readonly GameService _gameService;
         private readonly ConnectionResources _resources;
-        private static readonly Empty _empty = new();
+        private static readonly Empty s_empty = new();
 
         public LobbyService(IMapper mapper, GameService gameService, ConnectionResources resources)
         {
@@ -57,7 +57,7 @@ namespace Server.Services
         {
             var guid = ConnectionResources.ParseGuid(request.LobbyId);
             _resources.Lobbies.Remove(guid);
-            return Task.FromResult(_empty);
+            return Task.FromResult(s_empty);
         }
 
         public override Task<LobbyList> GetAllLobies(Empty request, ServerCallContext context)
@@ -101,7 +101,7 @@ namespace Server.Services
 
             lobby!.Players.Remove(kickingPlayer!);
 
-            return Task.FromResult(_empty);
+            return Task.FromResult(s_empty);
         }
 
         public override Task<Empty> LeaveLobby(ActionRequest request, ServerCallContext context)
@@ -110,7 +110,7 @@ namespace Server.Services
             var player = _resources.GetUser(request.SenderId);
 
             lobby!.Players.Remove(player!);
-            return Task.FromResult(_empty);
+            return Task.FromResult(s_empty);
         }
 
         public override Task<Empty> PrepareToGame(ActionRequest request, ServerCallContext context)
@@ -119,7 +119,7 @@ namespace Server.Services
             var player = _resources.GetUser(request.SenderId);
             lobby.Players.Where(x => x == player).Single().AreReady = true;
 
-            return Task.FromResult(_empty);
+            return Task.FromResult(s_empty);
         }
 
         public override Task<Empty> StartGame(ActionRequest request, ServerCallContext context)
@@ -134,7 +134,7 @@ namespace Server.Services
             lobby.Game = gameFactory.GetGameManager(lobby.Settings, new FisherYatesShuffler<GameEngine.Entities.GameEntities.Card>());
 
             _gameService.StartGame(lobby.Game);
-            return Task.FromResult(_empty);
+            return Task.FromResult(s_empty);
         }
     }
 }

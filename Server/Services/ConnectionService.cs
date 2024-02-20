@@ -10,7 +10,7 @@ namespace Server.Services
 {
     public class ConnectionService : Connections.Services.ConnectionService.ConnectionServiceBase
     {
-        private static readonly Empty empty = new Empty();
+        private static readonly Empty s_empty = new Empty();
         private readonly ConnectionResources _resources;
 
         public ConnectionService(ConnectionResources resources)
@@ -31,7 +31,7 @@ namespace Server.Services
         {
             var user = _resources.GetUser(request.Id);
             _resources.Users.Remove(Guid.Parse(request.Id));
-            return Task.FromResult(empty);
+            return Task.FromResult(s_empty);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Server.Services
     {
         private readonly IMapper _mapper;
         private readonly ConnectionResources _resources;
-        private static readonly Empty _empty = new Empty();
+        private static readonly Empty s_empty = new Empty();
 
         public GameService(IMapper mapper, ConnectionResources resources)
         {
@@ -33,14 +33,14 @@ namespace Server.Services
         {
             (var game, var player) = GetGameEntities(request.LobbyId, request.LobbyId);
             game!.EndTurn(player);
-            return Task.FromResult(_empty);
+            return Task.FromResult(s_empty);
         }
 
         public override Task<Empty> GiveUp(ActionRequest request, ServerCallContext context)
         {
             (var game, var player) = GetGameEntities(request.LobbyId, request.LobbyId);
             game!.GiveUp(player);
-            return Task.FromResult(_empty);
+            return Task.FromResult(s_empty);
         }
 
         public override Task<Empty> StartGame(GameId request, ServerCallContext context)
@@ -53,7 +53,7 @@ namespace Server.Services
             (var game, var player) = GetGameEntities(request.ActionRequest.LobbyId, request.ActionRequest.LobbyId);
             GameEntities.Card card = FindCard(request.Card, player);
             game!.ThrowAttackCard(player, card);
-            return Task.FromResult(_empty);
+            return Task.FromResult(s_empty);
         }
 
         public override Task<Empty> ThrowDeffenceCard(ThrowDefenceCardRequest request, ServerCallContext context)
@@ -61,7 +61,7 @@ namespace Server.Services
             (var game, var player) = GetGameEntities(request.ActionRequest.LobbyId, request.ActionRequest.LobbyId);
             GameEntities.Card card = FindCard(request.Card, player);
             game.ThrowDeffenceCard(player, card, request.Position);
-            return Task.FromResult(_empty);
+            return Task.FromResult(s_empty);
         }
         private GameEntities.Card FindCard(Connections.Services.Card messageCard, Player player)
         {

@@ -2,6 +2,8 @@
 
 using Connections.Services;
 
+using GameEngine.Entities.SystemEntites;
+
 using Google.Protobuf.WellKnownTypes;
 
 using Grpc.Core;
@@ -26,19 +28,23 @@ namespace Tests.ServerTests
         private ConnectionResources _resources;
 
         private string _nickName = "TEST";
+        private GameSettings _gameSettings;
 
         private readonly Empty _empty = new Empty();
 
         private ServerCallContext _mockContext;
 
+        private IMapper _mapper;
+
         [SetUp]
         public void SetUp()
         {
             var config = new MapperConfiguration(config => config.AddProfile<AppMappingProfile>());
-            var mapper = new Mapper(config);
+            _mapper = new Mapper(config);
             _resources = new ConnectionResources();
-            _lobbyService = new LobbyService(mapper, new Mock<GameService>(mapper, _resources).Object, _resources);
+            _lobbyService = new LobbyService(_mapper, new Mock<GameService>(_mapper, _resources).Object, _resources);
             _mockContext = new Mock<ServerCallContext>().Object;
+            _gameSettings = new() { DeckType = GameEngine.Entities.SystemEntites.DeckType.Common, PlayersCount = 2, PlayersStartCardsCount = 2 };
         }
 
         #region CreateLobbyTests
@@ -49,13 +55,13 @@ namespace Tests.ServerTests
             Guid guid = Guid.NewGuid();
             string nickName = "TEST";
 
-            LobbySetting lobbySetting = new LobbySetting() { DeckType = DeckType.Common, PlayersCount = 2, PlayersStartCount = 2 };
+
             var lobbyCreateRequest = new LobbyCreateRequest()
             {
                 CreatorId = guid.ToString(),
                 Name = nickName,
                 Password = string.Empty,
-                Settings = lobbySetting
+                Settings = _mapper.Map<LobbySetting>(_gameSettings),
             };
 
             _resources.Users.Add(guid, new() { Guid = guid, NickName = nickName });
@@ -80,7 +86,7 @@ namespace Tests.ServerTests
         {
             #region Arrange            
             var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
 
             ActionRequest request = new ActionRequest() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             #endregion
@@ -99,7 +105,7 @@ namespace Tests.ServerTests
         {
             #region Arrange            
             var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
             var wrongId = Guid.NewGuid();
 
             ActionRequest request = new ActionRequest() { LobbyId = wrongId.ToString(), SenderId = user.Guid.ToString() };
@@ -129,7 +135,7 @@ namespace Tests.ServerTests
         {
             #region Arrange            
             var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, password: password);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings, password: password);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             JoinRequest request = new() { ActionRequest = actionRequest, Password = password };
@@ -152,7 +158,7 @@ namespace Tests.ServerTests
         {
             #region Arrange            
             var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, password: password);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings, password: password);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             JoinRequest request = new() { ActionRequest = actionRequest, Password = string.Empty };
@@ -181,7 +187,7 @@ namespace Tests.ServerTests
         {
             #region Arrange            
             var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             #endregion
@@ -200,7 +206,7 @@ namespace Tests.ServerTests
         {
             #region Arrange            
             var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
             var wrongGuid = Guid.NewGuid();
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = wrongGuid.ToString() };
             #endregion
@@ -225,7 +231,7 @@ namespace Tests.ServerTests
         {
             #region Arrange            
             var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
             var wrongGuid = Guid.NewGuid();
             ActionRequest actionRequest = new() { LobbyId = wrongGuid.ToString(), SenderId = user.Guid.ToString() };
             #endregion
@@ -255,7 +261,7 @@ namespace Tests.ServerTests
             var kicker = Helpers.AddNewUser(_nickName, _resources);
             var kickingUser = Helpers.AddNewUser(_nickName, _resources);
 
-            var lobby = Helpers.AddNewLobby(lobbyOwner, _resources);
+            var lobby = Helpers.AddNewLobby(lobbyOwner, _resources, _gameSettings);
             lobby.Players.Add(kickingUser);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = kicker.Guid.ToString() };
@@ -285,7 +291,7 @@ namespace Tests.ServerTests
             var lobbyOwner = Helpers.AddNewUser(_nickName, _resources);
             var kickingUser = Helpers.AddNewUser(_nickName, _resources);
 
-            var lobby = Helpers.AddNewLobby(lobbyOwner, _resources);
+            var lobby = Helpers.AddNewLobby(lobbyOwner, _resources, _gameSettings);
             lobby.Players.Add(kickingUser);
 
             var wrongGuid = Guid.NewGuid();
@@ -316,7 +322,7 @@ namespace Tests.ServerTests
             var user = Helpers.AddNewUser(_nickName, _resources);
             var kickingUser = Helpers.AddNewUser(_nickName, _resources);
 
-            var lobby = Helpers.AddNewLobby(user, _resources);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
             lobby.Players.Add(kickingUser);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
@@ -343,7 +349,7 @@ namespace Tests.ServerTests
             #region Arrange            
             var user = Helpers.AddNewUser(_nickName, _resources);
             for (int i = 0; i < lobbyCount; i++)
-                Helpers.AddNewLobby(user, _resources, i.ToString());
+                Helpers.AddNewLobby(user, _resources, _gameSettings, i.ToString());
 
             #endregion
 
@@ -356,6 +362,49 @@ namespace Tests.ServerTests
             Assert.IsTrue(uniqueLobbyCount == lobbyCount);
             #endregion
         }
-        #endregion 
+        #endregion
+
+        #region StartGame&PrepareToGame
+        [Test]
+        public void PLAYER_TRYING_PREPARE_TO_GAME_SHOULD_DO_IT()
+        {
+            #region Arrange            
+            var user = Helpers.AddNewUser(_nickName, _resources);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            lobby.Players.Add(user);
+
+            ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
+            #endregion
+
+            #region Act      
+            _lobbyService.PrepareToGame(actionRequest, _mockContext);
+            #endregion
+
+            #region Assert            
+            Assert.IsTrue(lobby.Players.Where(x => x == user).Single().AreReady);
+            #endregion
+        }
+
+        [Test]
+        public void TRYING_START_GAME_ALL_PLAYERS_ARE_READY_SHOULD_DO_UT()
+        {
+            #region Arrange            
+            var user = Helpers.AddNewUser(_nickName, _resources);
+            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            lobby.Players.Add(user);
+
+            ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
+            _lobbyService.PrepareToGame(actionRequest, _mockContext);
+            #endregion
+
+            #region Act      
+            _lobbyService.StartGame(actionRequest, _mockContext);
+            #endregion
+
+            #region Assert            
+            Assert.IsTrue(lobby.Game != null);
+            #endregion
+        }
+        #endregion
     }
 }

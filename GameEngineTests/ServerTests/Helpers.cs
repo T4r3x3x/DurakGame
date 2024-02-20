@@ -1,4 +1,6 @@
-﻿using Server.Entities;
+﻿using GameEngine.Entities.SystemEntites;
+
+using Server.Entities;
 
 namespace Tests.ServerTests
 {
@@ -12,10 +14,10 @@ namespace Tests.ServerTests
             return user;
         }
 
-        internal static Lobby AddNewLobby(User user, ConnectionResources resources, string name = "", string password = "")
+        internal static Lobby AddNewLobby(User user, ConnectionResources resources, GameSettings settings, string name = "", string password = "")
         {
             Guid guid = Guid.NewGuid();
-            Lobby lobby = new Lobby() { Guid = guid, Name = name, Owner = user, Password = password, Players = new(), Settings = null };
+            Lobby lobby = new Lobby() { Guid = guid, Name = name, Owner = user, Password = password, Players = new(), Settings = settings };
             resources.Lobbies.Add(guid, lobby);
             return lobby;
         }
