@@ -17,10 +17,12 @@ using NUnit.Framework.Internal;
 using Server.Entities;
 using Server.Utilities;
 
+using Tests.ServerTests.Helpers;
+
 using GameService = Server.Services.GameService;
 using LobbyService = Server.Services.LobbyService;
 
-namespace Tests.ServerTests
+namespace Tests.ServerTests.LobbyServiceTests
 {
     internal class LobbyServiceTest
     {
@@ -87,8 +89,8 @@ namespace Tests.ServerTests
         public void TRYING_DELETE_LOBBY_SHOUD_DO_IT()
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
 
             ActionRequest request = new ActionRequest() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             #endregion
@@ -106,8 +108,8 @@ namespace Tests.ServerTests
         public void TRYING_DELETE_SENDING_WRONG_ID_SHOULD_THROW_EXCEPTION()
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
             var wrongId = Guid.NewGuid();
 
             ActionRequest request = new ActionRequest() { LobbyId = wrongId.ToString(), SenderId = user.Guid.ToString() };
@@ -136,8 +138,8 @@ namespace Tests.ServerTests
         public void TRYING_JOIN_LOBBY_SENDING_CORRECT_PASSWORD_SHOULD_JOIN(string? password)
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings, password: password);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings, password: password);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             JoinRequest request = new() { ActionRequest = actionRequest, Password = password };
@@ -159,8 +161,8 @@ namespace Tests.ServerTests
         public void TRYING_JOIN_LOBBY_SENDING_INCORRECT_PASSWORD_SHOULD_THROW_EXCEPTION(string? password)
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings, password: password);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings, password: password);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             JoinRequest request = new() { ActionRequest = actionRequest, Password = string.Empty };
@@ -188,8 +190,8 @@ namespace Tests.ServerTests
         public void TRYING_LEAVE_LOBBY_SHOULD_LEAVE()
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             #endregion
@@ -207,8 +209,8 @@ namespace Tests.ServerTests
         public void TRYING_LEAVE_LOBBY_SENDING_WROND_USER_ID_SHOULD_THROW_EXCEPTION()
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
             var wrongGuid = Guid.NewGuid();
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = wrongGuid.ToString() };
             #endregion
@@ -232,8 +234,8 @@ namespace Tests.ServerTests
         public void TRYING_LEAVE_LOBBY_SENDING_WROND_LOBBY_ID_SHOULD_THROW_EXCEPTION()
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
             var wrongGuid = Guid.NewGuid();
             ActionRequest actionRequest = new() { LobbyId = wrongGuid.ToString(), SenderId = user.Guid.ToString() };
             #endregion
@@ -259,11 +261,11 @@ namespace Tests.ServerTests
         public void NOT_OWNER_TRYING_KICK_PLAYER_SHOULD_THROW_EXCEPTION()
         {
             #region Arrange            
-            var lobbyOwner = Helpers.AddNewUser(_nickName, _resources);
-            var kicker = Helpers.AddNewUser(_nickName, _resources);
-            var kickingUser = Helpers.AddNewUser(_nickName, _resources);
+            var lobbyOwner = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var kicker = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var kickingUser = CreatingHelpers.AddNewUser(_nickName, _resources);
 
-            var lobby = Helpers.AddNewLobby(lobbyOwner, _resources, _gameSettings);
+            var lobby = CreatingHelpers.AddNewLobby(lobbyOwner, _resources, _gameSettings);
             lobby.Players.Add(kickingUser);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = kicker.Guid.ToString() };
@@ -290,10 +292,10 @@ namespace Tests.ServerTests
         public void OWNER_TRYING_KICK_PLAYER_SENDING_WRONG_ID_SHOULD_THROW_EXCEPTION()
         {
             #region Arrange            
-            var lobbyOwner = Helpers.AddNewUser(_nickName, _resources);
-            var kickingUser = Helpers.AddNewUser(_nickName, _resources);
+            var lobbyOwner = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var kickingUser = CreatingHelpers.AddNewUser(_nickName, _resources);
 
-            var lobby = Helpers.AddNewLobby(lobbyOwner, _resources, _gameSettings);
+            var lobby = CreatingHelpers.AddNewLobby(lobbyOwner, _resources, _gameSettings);
             lobby.Players.Add(kickingUser);
 
             var wrongGuid = Guid.NewGuid();
@@ -321,10 +323,10 @@ namespace Tests.ServerTests
         public void TRYING_KICK_PLAYER_SHOULD_DO_IT()
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var kickingUser = Helpers.AddNewUser(_nickName, _resources);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var kickingUser = CreatingHelpers.AddNewUser(_nickName, _resources);
 
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
             lobby.Players.Add(kickingUser);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
@@ -349,9 +351,9 @@ namespace Tests.ServerTests
         public void TRYING_GET_ALL_LOBIES_SHOULD_RETURN_ALL_CREATED_LOBBIES(int lobbyCount)
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
             for (int i = 0; i < lobbyCount; i++)
-                Helpers.AddNewLobby(user, _resources, _gameSettings, i.ToString());
+                CreatingHelpers.AddNewLobby(user, _resources, _gameSettings, i.ToString());
 
             #endregion
 
@@ -371,8 +373,8 @@ namespace Tests.ServerTests
         public void PLAYER_TRYING_PREPARE_TO_GAME_SHOULD_DO_IT()
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
             lobby.Players.Add(user);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
@@ -391,8 +393,8 @@ namespace Tests.ServerTests
         public void TRYING_START_GAME_ALL_PLAYERS_ARE_READY_SHOULD_DO_UT()
         {
             #region Arrange            
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var lobby = Helpers.AddNewLobby(user, _resources, _gameSettings);
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
             lobby.Players.Add(user);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };

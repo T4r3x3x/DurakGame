@@ -2,9 +2,9 @@
 
 using Server.Entities;
 
-namespace Tests.ServerTests
+namespace Tests.ServerTests.Helpers
 {
-    internal class Helpers
+    internal class CreatingHelpers
     {
         internal static User AddNewUser(string nickName, ConnectionResources resources)
         {

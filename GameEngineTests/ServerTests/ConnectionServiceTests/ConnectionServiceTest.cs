@@ -8,9 +8,11 @@ using Moq;
 
 using Server.Entities;
 
+using Tests.ServerTests.Helpers;
+
 using ConnectionService = Server.Services.ConnectionService;
 
-namespace Tests.ServerTests
+namespace Tests.ServerTests.ConnectionServiceTests
 {
     internal class ConnectionServiceTest
     {
@@ -49,13 +51,14 @@ namespace Tests.ServerTests
         public void USER_TRYING_DISCONNECT_SHOULD_DO_IT()
         {
             #region Arrange
-            var user = Helpers.AddNewUser(_nickName, _resources);
-            var playerId = new PlayerId() { Id = user.Guid.ToString() };
+            var user = CreatingHelpers.AddNewUser(_nickName, _resources);
+            var playerId = new ConnectionReply() { Id = user.Guid.ToString() };
+            var diconnectRequest = new DisconnectRequest() { Id = playerId.Id };
             var mockContext = new Mock<ServerCallContext>();
             #endregion
 
             #region Act
-            _connectionService.Disconnect(playerId, mockContext.Object);
+            _connectionService.Disconnect(diconnectRequest, mockContext.Object);
             #endregion
 
             #region Assert
@@ -69,14 +72,15 @@ namespace Tests.ServerTests
         {
             #region Arrange            
             var wrongGuid = Guid.NewGuid();
-            var playerId = new PlayerId() { Id = wrongGuid.ToString() };
+            var playerId = new ConnectionReply() { Id = wrongGuid.ToString() };
+            var diconnectRequest = new DisconnectRequest() { Id = playerId.Id };
             var mockContext = new Mock<ServerCallContext>();
             #endregion
 
             #region Act
             try
             {
-                _connectionService.Disconnect(playerId, mockContext.Object);
+                _connectionService.Disconnect(diconnectRequest, mockContext.Object);
             }
             #endregion
 

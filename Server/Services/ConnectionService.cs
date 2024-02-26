@@ -21,7 +21,7 @@ namespace Server.Services
             _resources = resources;
         }
 
-        public override Task<PlayerId> Connect(LoginRequest request, ServerCallContext context)
+        public override Task<ConnectionReply> Connect(LoginRequest request, ServerCallContext context)
         {
             Guid userId = Guid.NewGuid();
             User user = new User { Guid = userId, NickName = request.NickName };
@@ -29,10 +29,10 @@ namespace Server.Services
 
             _logger.LogInformation($"User {user.NickName} with id: {user.Guid} has been connected!");
 
-            return Task.FromResult(new PlayerId { Id = userId.ToString() });
+            return Task.FromResult(new ConnectionReply { Id = userId.ToString() });
         }
 
-        public override Task<Empty> Disconnect(PlayerId request, ServerCallContext context)
+        public override Task<Empty> Disconnect(DisconnectRequest request, ServerCallContext context)
         {
             var user = _resources.GetUser(request.Id);
             _resources.Users.Remove(Guid.Parse(request.Id));
