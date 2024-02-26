@@ -2,6 +2,8 @@
 
 using Grpc.Core;
 
+using Microsoft.Extensions.Logging;
+
 using Moq;
 
 using Server.Entities;
@@ -14,12 +16,15 @@ namespace Tests.ServerTests
     {
         private ConnectionService _connectionService;
         private ConnectionResources _resources = new();
+        private ILogger<ConnectionService> _mockLogger;
+
         private string _nickName = "TEST";
 
         [SetUp]
         public void SetUp()
         {
-            _connectionService = new(_resources);
+            _mockLogger = Mock.Of<ILogger<ConnectionService>>();
+            _connectionService = new(_mockLogger, _resources);
         }
 
         [Test]

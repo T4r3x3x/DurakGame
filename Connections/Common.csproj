@@ -4,9 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;AllTest</Configurations>
   </PropertyGroup>
 	
 	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="Google.Protobuf" Version="3.25.2" />
 		<PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
 		<PackageReference Include="Grpc.AspNetCore.Server" Version="2.60.0" />
@@ -17,6 +19,10 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
     </ItemGroup>
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\GameEngine\GameEngine.csproj" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Protobuf Include="Protos\ConnectionService.proto">

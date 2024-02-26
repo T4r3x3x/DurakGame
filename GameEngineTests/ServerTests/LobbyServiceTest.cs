@@ -14,8 +14,8 @@ using Moq;
 
 using NUnit.Framework.Internal;
 
-using Server;
 using Server.Entities;
+using Server.Utilities;
 
 using GameService = Server.Services.GameService;
 using LobbyService = Server.Services.LobbyService;
@@ -34,15 +34,17 @@ namespace Tests.ServerTests
 
         private ServerCallContext _mockContext;
 
+        private Microsoft.Extensions.Logging.ILogger<LobbyService> _mockLogger;
         private IMapper _mapper;
 
         [SetUp]
         public void SetUp()
         {
-            var config = new MapperConfiguration(config => config.AddProfile<AppMappingProfile>());
+            _mockLogger = Mock.Of<Microsoft.Extensions.Logging.ILogger<LobbyService>>();
+            var config = new MapperConfiguration(config => config.AddProfile<ServerMappingProfile>());
             _mapper = new Mapper(config);
             _resources = new ConnectionResources();
-            _lobbyService = new LobbyService(_mapper, new Mock<GameService>(_mapper, _resources).Object, _resources);
+            _lobbyService = new LobbyService(_mockLogger, _mapper, new Mock<GameService>(_mapper, _resources).Object, _resources);
             _mockContext = new Mock<ServerCallContext>().Object;
             _gameSettings = new() { DeckType = GameEngine.Entities.SystemEntites.DeckType.Common, PlayersCount = 2, PlayersStartCardsCount = 2 };
         }

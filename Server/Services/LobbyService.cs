@@ -21,10 +21,13 @@ namespace Server.Services
         private readonly IMapper _mapper;
         private readonly GameService _gameService;
         private readonly ConnectionResources _resources;
+        private readonly ILogger<LobbyService> _logger;
+
         private static readonly Empty s_empty = new();
 
-        public LobbyService(IMapper mapper, GameService gameService, ConnectionResources resources)
+        public LobbyService(ILogger<LobbyService> logger, IMapper mapper, GameService gameService, ConnectionResources resources)
         {
+            _logger = logger;
             _mapper = mapper;
             _gameService = gameService;
             _resources = resources;

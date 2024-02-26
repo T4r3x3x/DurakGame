@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Configurations>Debug;Release;AllTest</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,11 +12,12 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
     <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.60.0" />
     <PackageReference Include="Grpc.Core" Version="2.46.6" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.61.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GameEngine\GameEngine.csproj" />
-    <ProjectReference Include="..\Connections\Connections.csproj" />
+    <ProjectReference Include="..\Connections\Common.csproj" />
   </ItemGroup>
 
 </Project>

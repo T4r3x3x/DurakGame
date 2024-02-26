@@ -19,12 +19,15 @@ namespace Server.Services
     {
         private readonly IMapper _mapper;
         private readonly ConnectionResources _resources;
+        private readonly ILogger<GameService> _logger;
+
         private static readonly Empty s_empty = new Empty();
 
-        public GameService(IMapper mapper, ConnectionResources resources)
+        public GameService(IMapper mapper, ConnectionResources resources, ILogger<GameService> logger)
         {
             _mapper = mapper;
             _resources = resources;
+            _logger = logger;
         }
 
         public async Task StartGame(Game game) => game.StartGame();

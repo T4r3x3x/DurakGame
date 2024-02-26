@@ -5,10 +5,10 @@
         public readonly Suit SuitValue;
         public readonly Rank RankValue;
 
-        public Card(Suit suit, Rank rank)
+        public Card(Suit suitValue, Rank rankValue)
         {
-            SuitValue = suit;
-            RankValue = rank;
+            SuitValue = suitValue;
+            RankValue = rankValue;
         }
 
         public static bool operator ==(Card a, Card b) => a.RankValue == b.RankValue && a.SuitValue == b.SuitValue;

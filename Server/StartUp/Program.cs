@@ -1,17 +1,24 @@
-using Server;
+using AutoMapper;
+
+using Common.Utilities;
+
 using Server.Entities;
 using Server.Services;
+using Server.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddGrpc();
-builder.Services.AddAutoMapper(typeof(AppMappingProfile));
+var config = new MapperConfiguration(
+    cfg =>
+    {
+        cfg.AddProfile<CommonMappingProfile>();
+        cfg.AddProfile<ServerMappingProfile>();
+    });
 builder.Services.AddSingleton<ConnectionResources>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 app.MapGrpcService<ConnectionService>();
 app.MapGrpcService<GameService>();
 app.MapGrpcService<LobbyService>();
