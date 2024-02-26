@@ -9,21 +9,21 @@ namespace DurakClient.Services
 {
     public class ConnectionService
     {
-        private readonly ConnectionServiceClient _clientService;
+        private readonly ConnectionServiceClient _connectionService;
 
-        public ConnectionService(ConnectionServiceClient clientService) => _clientService = clientService;
+        public ConnectionService(ConnectionServiceClient clientService) => _connectionService = clientService;
 
         public async Task<Guid> Connect(string nickname)
         {
             var request = new LoginRequest() { NickName = nickname };
-            var responce = await _clientService.ConnectAsync(request);
+            var responce = await _connectionService.ConnectAsync(request);
             return Guid.Parse(responce.Id);
         }
 
         public async Task Disconnect(Guid guid)
         {
             var request = new DisconnectRequest() { Id = guid.ToString() };
-            await _clientService.DisconnectAsync(request);
+            await _connectionService.DisconnectAsync(request);
         }
     }
 }

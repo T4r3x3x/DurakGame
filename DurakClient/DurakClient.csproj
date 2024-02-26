@@ -25,9 +25,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Connections\Common.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="MVVM\Models\" />
-	</ItemGroup>
  
 </Project>
