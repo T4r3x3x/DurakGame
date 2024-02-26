@@ -50,20 +50,12 @@ namespace DurakClient.Services
 
         public async Task DeleteLobby(Guid lobbyId)
         {
-            var actionRequest = new ActionRequest
-            {
-                LobbyId = lobbyId.ToString(),
-                SenderId = _userId.ToString()
-            };
+            var actionRequest = GetActionRequest(lobbyId);
             await _lobbyService.DeleteLobbyAsync(actionRequest);
         }
         public async Task JoinLobby(Guid lobbyId, string? password)
         {
-            var actionRequest = new ActionRequest
-            {
-                LobbyId = lobbyId.ToString(),
-                SenderId = _userId.ToString()
-            };
+            var actionRequest = GetActionRequest(lobbyId);
 
             var joinRequest = new JoinRequest() { ActionRequest = actionRequest, Password = password };
             var responceStream = _lobbyService.JoinLobby(joinRequest);
@@ -73,43 +65,28 @@ namespace DurakClient.Services
 
 
         }
+
         public async Task LeaveLobby(Guid lobbyId)
         {
-            var actionRequest = new ActionRequest
-            {
-                LobbyId = lobbyId.ToString(),
-                SenderId = _userId.ToString()
-            };
+            var actionRequest = GetActionRequest(lobbyId);
             await _lobbyService.LeaveLobbyAsync(actionRequest);
         }
 
         public async Task StartGame(Guid lobbyId)
         {
-            var actionRequest = new ActionRequest
-            {
-                LobbyId = lobbyId.ToString(),
-                SenderId = _userId.ToString()
-            };
+            var actionRequest = GetActionRequest(lobbyId);
             await _lobbyService.StartGameAsync(actionRequest);
         }
 
         public async Task PrepareToGame(Guid lobbyId)
         {
-            var actionRequest = new ActionRequest
-            {
-                LobbyId = lobbyId.ToString(),
-                SenderId = _userId.ToString()
-            };
+            var actionRequest = GetActionRequest(lobbyId);
             await _lobbyService.PrepareToGameAsync(actionRequest);
         }
 
         public async Task KickPlayer(Guid lobbyId, Guid KickingPlayerId)
         {
-            var actionRequest = new ActionRequest
-            {
-                LobbyId = lobbyId.ToString(),
-                SenderId = _userId.ToString()
-            };
+            ActionRequest actionRequest = GetActionRequest(lobbyId);
             var request = new KickPlayerRequest()
             {
                 ActionRequest = actionRequest,
@@ -117,6 +94,15 @@ namespace DurakClient.Services
             };
 
             await _lobbyService.KickPlayerAsync(request);
+        }
+
+        private ActionRequest GetActionRequest(Guid lobbyId)
+        {
+            return new ActionRequest
+            {
+                LobbyId = lobbyId.ToString(),
+                SenderId = _userId.ToString()
+            };
         }
     }
 }

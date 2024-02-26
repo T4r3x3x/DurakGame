@@ -2,6 +2,7 @@
 
 using Connections.Services;
 
+using GameEngine.Entities.GameEntities;
 using GameEngine.Entities.SystemEntites;
 
 
@@ -14,8 +15,8 @@ namespace Common.Utilities
         {
             CreateMap<GameSettings, LobbySetting>();
             CreateMap<LobbySetting, GameSettings>();
-            CreateMap<Card, GameEngine.Entities.GameEntities.Card>();
-            CreateMap<GameEngine.Entities.GameEntities.Card, Card>();
+            CreateMap<CardMessage, Card>();
+            CreateMap<Card, CardMessage>();
         }
     }
 }

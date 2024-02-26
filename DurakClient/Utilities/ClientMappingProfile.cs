@@ -4,6 +4,8 @@ using Connections.Services;
 
 using DurakClient.MVVM.Models;
 
+using GameEngine.Entities.GameEntities;
+
 namespace DurakClient.Utilities
 {
     public class ClientMappingProfile : Profile
@@ -11,6 +13,7 @@ namespace DurakClient.Utilities
         public ClientMappingProfile()
         {
             CreateMap<LobbyModel, Lobby>();
+            CreateMap<Card, CardMessage>();
         }
     }
 }

@@ -2,6 +2,8 @@
 
 using Connections.Services;
 
+using GameEngine.Entities.GameEntities;
+
 using System;
 using System.Threading.Tasks;
 
@@ -30,30 +32,28 @@ namespace DurakClient.Services
             };
         }
 
-        public async Task EndTurn()
-        {
-            await _gameService.EndTurnAsync(_actionRequest);
-        }
-        public async Task GiveUp()
-        {
-            await _gameService.GiveUpAsync(_actionRequest);
-        }
+        public async Task EndTurn() => await _gameService.EndTurnAsync(_actionRequest);
+
+        public async Task GiveUp() => await _gameService.GiveUpAsync(_actionRequest);
+
         public async Task ThrowDeffenceCard(Card card, int position)
         {
+            var cardMessage = _mapper.Map<CardMessage>(card);
             var requset = new ThrowDefenceCardRequest()
             {
                 ActionRequest = _actionRequest,
-                Card = card,
+                Card = cardMessage,
                 Position = position
             };
             await _gameService.ThrowDeffenceCardAsync(requset);
         }
         public async Task ThrowAttackCard(Card card)
         {
+            var cardMessage = _mapper.Map<CardMessage>(card);
             var request = new ThrowAttackCardRequest()
             {
                 ActionRequest = _actionRequest,
-                Card = card
+                Card = cardMessage
             };
             await _gameService.ThrowAttackCardAsync(request);
         }

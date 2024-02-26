@@ -18,12 +18,12 @@ service GameService{
       
 message ThrowAttackCardRequest{
     ActionRequest ActionRequest = 1;
-    Card card = 2;
+    CardMessage Card = 2;
 }
 
 message ThrowDefenceCardRequest{
     ActionRequest ActionRequest = 1;
-    Card card = 2;
+    CardMessage Card = 2;
     int32 position = 3;
 }
 
@@ -31,7 +31,7 @@ message GameId{
     string gameId = 1;
 }
 
-message Card{
+message CardMessage{
     Rank rank = 1;
     Suit suit = 2;
 }
