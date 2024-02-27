@@ -7,12 +7,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 
 using Server.Entities;
-
-using Tests.ServerTests.Helpers;
-
+using ServerTests.Helpers;
 using ConnectionService = Server.Services.ConnectionService;
 
-namespace Tests.ServerTests.ConnectionServiceTests
+namespace ServerTests.ConnectionServiceTests
 {
     internal class ConnectionServiceTest
     {

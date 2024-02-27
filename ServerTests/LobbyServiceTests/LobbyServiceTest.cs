@@ -16,13 +16,11 @@ using NUnit.Framework.Internal;
 
 using Server.Entities;
 using Server.Utilities;
-
-using Tests.ServerTests.Helpers;
-
+using ServerTests.Helpers;
 using GameService = Server.Services.GameService;
 using LobbyService = Server.Services.LobbyService;
 
-namespace Tests.ServerTests.LobbyServiceTests
+namespace ServerTests.LobbyServiceTests
 {
     internal class LobbyServiceTest
     {
@@ -79,7 +77,7 @@ namespace Tests.ServerTests.LobbyServiceTests
             #region Assert
             var lobby = _resources.Lobbies.First().Value;
             Assert.IsTrue(lobby is not null);
-            Assert.IsTrue(lobby.Name == nickName);
+            Assert.IsTrue(lobby!.Name == nickName);
             #endregion
         }
         #endregion

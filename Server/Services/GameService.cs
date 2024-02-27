@@ -11,8 +11,6 @@ using Grpc.Core;
 
 using Server.Entities;
 
-using GameEntities = GameEngine.Entities.GameEntities;
-
 namespace Server.Services
 {
     public class GameService : Connections.Services.GameService.GameServiceBase
@@ -54,7 +52,7 @@ namespace Server.Services
         public override Task<Empty> ThrowAttackCard(ThrowAttackCardRequest request, ServerCallContext context)
         {
             (var game, var player) = GetGameEntities(request.ActionRequest.LobbyId, request.ActionRequest.LobbyId);
-            GameEntities.Card card = FindCard(request.Card, player);
+            Card card = FindCard(request.Card, player);
             game!.ThrowAttackCard(player, card);
             return Task.FromResult(s_empty);
         }
@@ -62,13 +60,13 @@ namespace Server.Services
         public override Task<Empty> ThrowDeffenceCard(ThrowDefenceCardRequest request, ServerCallContext context)
         {
             (var game, var player) = GetGameEntities(request.ActionRequest.LobbyId, request.ActionRequest.LobbyId);
-            GameEntities.Card card = FindCard(request.Card, player);
+            Card card = FindCard(request.Card, player);
             game.ThrowDeffenceCard(player, card, request.Position);
             return Task.FromResult(s_empty);
         }
-        private GameEntities.Card FindCard(Connections.Services.Card messageCard, Player player)
+        private Card FindCard(CardMessage messageCard, Player player)
         {
-            var playingCard = _mapper.Map<GameEntities.Card>(messageCard);
+            var playingCard = _mapper.Map<Card>(messageCard);
             var card = player.Cards.Where(x => x == playingCard).SingleOrDefault();
             if (card == null)
                 new RpcException(new Status(StatusCode.NotFound, $"Can't find a card [{messageCard.Rank},{messageCard.Suit}]"));
@@ -88,7 +86,7 @@ namespace Server.Services
             return (lobby.Game, player);
         }
 
-        private GameEntities.Player GetGameSidePlayer(Lobby lobby, User user)
+        private Player GetGameSidePlayer(Lobby lobby, User user)
         {
             var index = lobby.Players.IndexOf(user);
             var gamePlayer = lobby.Game!.Players[index];

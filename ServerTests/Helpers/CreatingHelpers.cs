@@ -2,7 +2,7 @@
 
 using Server.Entities;
 
-namespace Tests.ServerTests.Helpers
+namespace ServerTests.Helpers
 {
     internal class CreatingHelpers
     {

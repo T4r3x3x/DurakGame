@@ -14,7 +14,7 @@ namespace GameEngine.Entities.SystemEntites
         public void AddAttackCard(Card card)
         {
             _attackCards.Add(card);
-            _deffenceCards.Add(null);
+            _deffenceCards.Add(null!);
         }
 
         public void AddDeffenceCard(Card card, int position)
@@ -48,7 +48,7 @@ namespace GameEngine.Entities.SystemEntites
         {
             _attackCards.AddRange(_deffenceCards);
             _deffenceCards.Clear();
-            _deffenceCards.AddRange(Enumerable.Repeat<Card>(null, _attackCards.Count));
+            _deffenceCards.AddRange(Enumerable.Repeat<Card>(null!, _attackCards.Count));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace GameEngineTests.GameEngineTest
+﻿namespace GameEngineTests
 {
     internal class TurnCardsTests
     {

@@ -9,7 +9,7 @@ namespace DurakClient.Utilities
 {
     public class CustomViewLocator : IViewLocator
     {
-        public IViewFor ResolveView<T>(T viewModel, string contract = null) => viewModel switch
+        public IViewFor ResolveView<T>(T viewModel, string? contract = null) => viewModel switch
         {
             MainViewModel context => new MainView { DataContext = context },
             _ => throw new ArgumentOutOfRangeException(nameof(viewModel))

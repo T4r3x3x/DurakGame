@@ -51,6 +51,8 @@ namespace Server.Services
             lobby.Players.Add(creator);
             _resources.Lobbies.Add(lobby.Guid, lobby);
 
+            _logger.LogInformation($"Lobby {lobby.Guid} has been created!");
+
             var lobbyState = _mapper.Map<LobbyState>(lobby);
             while (!context.CancellationToken.IsCancellationRequested)
                 await responseStream.WriteAsync(lobbyState);
@@ -60,6 +62,9 @@ namespace Server.Services
         {
             var guid = ConnectionResources.ParseGuid(request.LobbyId);
             _resources.Lobbies.Remove(guid);
+
+            _logger.LogInformation($"Lobby {guid} has been deleted!");
+
             return Task.FromResult(s_empty);
         }
 
@@ -88,6 +93,8 @@ namespace Server.Services
 
             lobby!.Players.Add(player!);
 
+            _logger.LogInformation($"Player {playerId} has been joined to lobby {lobbyId}!");
+
             var lobbyState = _mapper.Map<LobbyState>(lobby);
             while (!context.CancellationToken.IsCancellationRequested)
                 await responseStream.WriteAsync(lobbyState);
@@ -104,6 +111,8 @@ namespace Server.Services
 
             lobby!.Players.Remove(kickingPlayer!);
 
+            _logger.LogInformation($"Player {kicker.Guid} kicked a player {kickingPlayer.Guid} for lobby {lobby.Guid}!");
+
             return Task.FromResult(s_empty);
         }
 
@@ -113,6 +122,9 @@ namespace Server.Services
             var player = _resources.GetUser(request.SenderId);
 
             lobby!.Players.Remove(player!);
+
+            _logger.LogInformation($"Player {player.Guid} leaved lobby {lobby.Guid}!");
+
             return Task.FromResult(s_empty);
         }
 
@@ -121,6 +133,8 @@ namespace Server.Services
             var lobby = _resources.GetLobby(request.LobbyId);
             var player = _resources.GetUser(request.SenderId);
             lobby.Players.Where(x => x == player).Single().AreReady = true;
+
+            _logger.LogInformation($"Player {player.Guid} prepared to game in lobby {lobby.Guid}!");
 
             return Task.FromResult(s_empty);
         }
@@ -135,8 +149,10 @@ namespace Server.Services
 
             var gameFactory = new GameFactory();
             lobby.Game = gameFactory.GetGameManager(lobby.Settings, new FisherYatesShuffler<GameEngine.Entities.GameEntities.Card>());
-
             _gameService.StartGame(lobby.Game);
+
+            _logger.LogInformation($"Game has been started in lobby {lobby.Guid}!");
+
             return Task.FromResult(s_empty);
         }
     }

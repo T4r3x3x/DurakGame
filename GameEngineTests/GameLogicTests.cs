@@ -2,7 +2,7 @@
 using GameEngine.Entities.SystemEntites;
 using GameEngine.FirstPlayerChoosers;
 
-namespace GameEngineTests.GameEngineTest
+namespace GameEngineTests
 {
     internal class GameLogicTests
     {
