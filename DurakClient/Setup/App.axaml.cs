@@ -3,7 +3,6 @@ using Avalonia.Markup.Xaml;
 
 using DurakClient.MVVM.ViewModels;
 using DurakClient.MVVM.Views;
-using DurakClient.Services.ConnectionServices;
 using DurakClient.Utilities;
 
 using Grpc.Net.Client;
@@ -11,8 +10,6 @@ using Grpc.Net.Client;
 using ReactiveUI;
 
 using Splat;
-
-using static Connections.Services.ConnectionService;
 
 namespace DurakClient.Setup;
 
@@ -26,8 +23,8 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         var channel = GrpcChannel.ForAddress("http://localhost:5058");
-        var client = new ConnectionServiceClient(channel);
-        Locator.CurrentMutable.RegisterConstant<IScreen>(new ConnectionViewModel(new ConnectionService(client)));
+        var client = new Connections.Services.ConnectionService.ConnectionServiceClient(channel);
+        Locator.CurrentMutable.RegisterConstant<IScreen>(new ConnectionViewModel(new Services.ConnectionServices.ConnectionService(client)));
         Locator.CurrentMutable.RegisterLazySingleton(() => new CustomViewLocator(), typeof(IViewLocator));
 
 

@@ -25,9 +25,7 @@ namespace ServerTests.ConnectionServiceTests
         [SetUp]
         public void SetUp()
         {
-            var mockLogger = new Mock<ILogger<ConnectionService>>();
-            mockLogger.Setup(x => x.LogInformation(It.IsAny<string?>())).Verifiable();
-            _mockLogger = mockLogger.Object;
+            _mockLogger = Mock.Of<ILogger<ConnectionService>>();
             _connectionService = new(_mockLogger, _resources);
         }
 

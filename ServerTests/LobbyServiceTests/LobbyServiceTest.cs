@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 
+using Common.Utilities;
+
 using Connections.Services;
 
 using GameEngine.Entities.SystemEntites;
@@ -43,15 +45,18 @@ namespace ServerTests.LobbyServiceTests
         [SetUp]
         public void SetUp()
         {
-            var mockLogger = new Mock<ILogger<LobbyService>>();
-            mockLogger.Setup(x => x.LogInformation(It.IsAny<string?>())).Verifiable();
-            _mockLogger = mockLogger.Object;
+            _mockLogger = Mock.Of<ILogger<LobbyService>>();
 
-            var config = new MapperConfiguration(config => config.AddProfile<ServerMappingProfile>());
+            var config = new MapperConfiguration(
+                cfg =>
+                                        {
+                                            cfg.AddProfile<CommonMappingProfile>();
+                                            cfg.AddProfile<ServerMappingProfile>();
+                                        });
             _mapper = new Mapper(config);
 
             _resources = new ConnectionResources();
-            _lobbyService = new LobbyService(_mockLogger, _mapper, new Mock<GameService>(_mapper, _resources).Object, _resources);
+            _lobbyService = new LobbyService(_mockLogger, _mapper, new Mock<GameService>(_mapper, _resources, Mock.Of<ILogger<GameService>>()).Object, _resources);
             _mockContext = new Mock<ServerCallContext>().Object;
             _gameSettings = new() { DeckType = GameEngine.Entities.SystemEntites.DeckType.Common, PlayersCount = 2, PlayersStartCardsCount = 2 };
         }
