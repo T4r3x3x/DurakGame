@@ -9,26 +9,23 @@ using System.Threading.Tasks;
 
 using static Connections.Services.GameService;
 
-namespace DurakClient.Services
+namespace DurakClient.Services.GameServices
 {
-    public class GameService
+    public class GameService : IGameService
     {
         private readonly GameServiceClient _gameService;
         private readonly IMapper _mapper;
-        private readonly Guid _userId, _lobbyId;
         private readonly ActionRequest _actionRequest;
 
         public GameService(GameServiceClient gameService, IMapper mapper, Guid userId, Guid lobbyId)
         {
             _gameService = gameService;
             _mapper = mapper;
-            _userId = userId;
-            _lobbyId = lobbyId;
 
             _actionRequest = new()
             {
                 LobbyId = lobbyId.ToString(),
-                SenderId = _userId.ToString(),
+                SenderId = userId.ToString(),
             };
         }
 

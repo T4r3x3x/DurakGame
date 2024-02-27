@@ -25,5 +25,11 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Connections\Common.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="MVVM\Views\ConnectionView.axaml.cs">
+	    <DependentUpon>ConnectionView.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
  
 </Project>

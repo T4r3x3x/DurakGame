@@ -8,6 +8,7 @@ using Google.Protobuf.WellKnownTypes;
 
 using Grpc.Core;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 using Moq;
@@ -16,7 +17,9 @@ using NUnit.Framework.Internal;
 
 using Server.Entities;
 using Server.Utilities;
+
 using ServerTests.Helpers;
+
 using GameService = Server.Services.GameService;
 using LobbyService = Server.Services.LobbyService;
 
@@ -34,15 +37,19 @@ namespace ServerTests.LobbyServiceTests
 
         private ServerCallContext _mockContext;
 
-        private Microsoft.Extensions.Logging.ILogger<LobbyService> _mockLogger;
+        private ILogger<LobbyService> _mockLogger;
         private IMapper _mapper;
 
         [SetUp]
         public void SetUp()
         {
-            _mockLogger = Mock.Of<Microsoft.Extensions.Logging.ILogger<LobbyService>>();
+            var mockLogger = new Mock<ILogger<LobbyService>>();
+            mockLogger.Setup(x => x.LogInformation(It.IsAny<string?>())).Verifiable();
+            _mockLogger = mockLogger.Object;
+
             var config = new MapperConfiguration(config => config.AddProfile<ServerMappingProfile>());
             _mapper = new Mapper(config);
+
             _resources = new ConnectionResources();
             _lobbyService = new LobbyService(_mockLogger, _mapper, new Mock<GameService>(_mapper, _resources).Object, _resources);
             _mockContext = new Mock<ServerCallContext>().Object;

@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 using Moq;
 
 using Server.Entities;
+
 using ServerTests.Helpers;
+
 using ConnectionService = Server.Services.ConnectionService;
 
 namespace ServerTests.ConnectionServiceTests
@@ -23,7 +25,9 @@ namespace ServerTests.ConnectionServiceTests
         [SetUp]
         public void SetUp()
         {
-            _mockLogger = Mock.Of<ILogger<ConnectionService>>();
+            var mockLogger = new Mock<ILogger<ConnectionService>>();
+            mockLogger.Setup(x => x.LogInformation(It.IsAny<string?>())).Verifiable();
+            _mockLogger = mockLogger.Object;
             _connectionService = new(_mockLogger, _resources);
         }
 

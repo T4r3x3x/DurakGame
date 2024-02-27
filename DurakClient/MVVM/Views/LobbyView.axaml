@@ -8,7 +8,7 @@
         x:Class="DurakClient.MVVM.Views.LobbyView"
 	    x:DataType="vm:LobbyViewModel">
 	<Design.DataContext>
-		<vm:MainViewModel />
+		<vm:ConnectionViewModel/>
 	</Design.DataContext>
 
 	<Grid>

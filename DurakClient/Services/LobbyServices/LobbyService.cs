@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 using static Connections.Services.LobbyService;
 
-namespace DurakClient.Services
+namespace DurakClient.Services.LobbyServices
 {
-    public class LobbyService
+    public class LobbyService : ILobbyService
     {
         private readonly LobbyServiceClient _lobbyService;
         private readonly Guid _userId;

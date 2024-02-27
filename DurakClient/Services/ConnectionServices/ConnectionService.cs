@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 using static Connections.Services.ConnectionService;
 
-namespace DurakClient.Services
+namespace DurakClient.Services.ConnectionServices
 {
-    public class ConnectionService
+    public class ConnectionService : IConnectionService
     {
         private readonly ConnectionServiceClient _connectionService;
 

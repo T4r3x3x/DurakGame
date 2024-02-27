@@ -7,9 +7,9 @@ using ReactiveUI;
 
 namespace DurakClient.MVVM.Views;
 
-public partial class MainWindow : ReactiveWindow<MainWindowModel>
+public partial class ConnectionView : ReactiveWindow<ConnectionViewModel>
 {
-    public MainWindow()
+    public ConnectionView()
     {
         this.WhenActivated(disposables => { });
         AvaloniaXamlLoader.Load(this);
