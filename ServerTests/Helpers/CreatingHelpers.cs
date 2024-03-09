@@ -10,7 +10,7 @@ namespace ServerTests.Helpers
         {
             Guid guid = Guid.NewGuid();
             User user = new User() { Guid = guid, NickName = nickName };
-            resources.Users.Add(guid, user);
+            resources.Users.TryAdd(guid, user);
             return user;
         }
 
@@ -18,7 +18,7 @@ namespace ServerTests.Helpers
         {
             Guid guid = Guid.NewGuid();
             Lobby lobby = new Lobby() { Guid = guid, Name = name, Owner = user, Password = password, Players = new(), Settings = settings };
-            resources.Lobbies.Add(guid, lobby);
+            resources.Lobbies.TryAdd(guid, lobby);
             return lobby;
         }
     }

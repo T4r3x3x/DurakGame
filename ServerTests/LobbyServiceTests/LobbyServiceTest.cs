@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 
-using Common.Utilities;
-
 using Connections.Services;
 
 using GameEngine.Entities.SystemEntites;
@@ -46,19 +44,20 @@ namespace ServerTests.LobbyServiceTests
         public void SetUp()
         {
             _mockLogger = Mock.Of<ILogger<LobbyService>>();
-
-            var config = new MapperConfiguration(
-                cfg =>
-                                        {
-                                            cfg.AddProfile<CommonMappingProfile>();
-                                            cfg.AddProfile<ServerMappingProfile>();
-                                        });
-            _mapper = new Mapper(config);
-
+            _mapper = MappingProfilesRegister.GetMapper();
             _resources = new ConnectionResources();
-            _lobbyService = new LobbyService(_mockLogger, _mapper, new Mock<GameService>(_mapper, _resources, Mock.Of<ILogger<GameService>>()).Object, _resources);
             _mockContext = new Mock<ServerCallContext>().Object;
-            _gameSettings = new() { DeckType = GameEngine.Entities.SystemEntites.DeckType.Common, PlayersCount = 2, PlayersStartCardsCount = 2 };
+            _gameSettings = new()
+            {
+                DeckType = GameEngine.Entities.SystemEntites.DeckType.Common,
+                PlayersCount = 2,
+                PlayersStartCardsCount = 2
+            };
+
+            var gameServiceLogger = Mock.Of<ILogger<GameService>>();
+            var mockGameService = new Mock<GameService>(_mapper, _resources, gameServiceLogger).Object;
+
+            _lobbyService = new LobbyService(_mockLogger, _mapper, mockGameService, _resources);
         }
 
         #region CreateLobbyTests
@@ -78,7 +77,7 @@ namespace ServerTests.LobbyServiceTests
                 Settings = _mapper.Map<LobbySetting>(_gameSettings),
             };
 
-            _resources.Users.Add(guid, new() { Guid = guid, NickName = nickName });
+            _resources.Users.TryAdd(guid, new() { Guid = guid, NickName = nickName });
             #endregion
 
             #region Act

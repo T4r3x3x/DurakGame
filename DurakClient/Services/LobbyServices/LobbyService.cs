@@ -9,6 +9,7 @@ using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 using static Connections.Services.LobbyService;
@@ -22,6 +23,8 @@ namespace DurakClient.Services.LobbyServices
         private readonly IMapper _mapper;
 
         private static readonly Empty s_empty = new Empty();
+
+        private readonly BehaviorSubject<List<Lobby>> _lobbySubject;
 
         public LobbyService(LobbyServiceClient clientService, Guid guid, IMapper mapper)
         {
@@ -37,6 +40,7 @@ namespace DurakClient.Services.LobbyServices
                                     .Select(x => _mapper.Map<Lobby>(x))
                                     .ToList();
         }
+
         public async Task CreateLobby(LobbyCreateModel createModel)
         {
             var createRequest = _mapper.Map<LobbyCreateRequest>(createModel);

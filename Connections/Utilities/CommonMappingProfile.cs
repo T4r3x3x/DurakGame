@@ -13,10 +13,8 @@ namespace Common.Utilities
     {
         public CommonMappingProfile()
         {
-            CreateMap<GameSettings, LobbySetting>();
-            CreateMap<LobbySetting, GameSettings>();
-            CreateMap<CardMessage, Card>();
-            CreateMap<Card, CardMessage>();
+            CreateMap<GameSettings, LobbySetting>().ReverseMap();
+            CreateMap<CardMessage, Card>().ReverseMap();
         }
     }
 }

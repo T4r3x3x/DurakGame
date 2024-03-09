@@ -6,12 +6,80 @@
 		xmlns:vm="clr-namespace:DurakClient.MVVM.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="DurakClient.MVVM.Views.LobbyView"
-	    x:DataType="vm:LobbyViewModel">
-	<Design.DataContext>
-		<vm:ConnectionViewModel/>
-	</Design.DataContext>
+	    x:DataType="vm:LobbiesViewModel">
 
-	<Grid>
-		<TextBlock>Lobby!</TextBlock>
-	</Grid>
+	<DockPanel>
+		<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10" Grid.Row="0">Avaliable lobbies list</TextBlock>
+
+		<DockPanel DockPanel.Dock="Left">
+			<TextBlock HorizontalAlignment="Center" Padding="10" DockPanel.Dock="Top">Filters</TextBlock>
+			<TextBox DockPanel.Dock="Top" Watermark="Lobby name"></TextBox>
+
+			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Padding="10">Settings</TextBlock>
+
+			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Padding="10">Players count</TextBlock>
+
+
+			<Grid DockPanel.Dock="Top">
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+
+				<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0">From</TextBlock>
+				<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1">To</TextBlock>
+				
+				<NumericUpDown Name="PlayersCountFrom" Grid.Row="1" Grid.Column="0" Minimum="2" Maximum="6" FormatString="0" Value="2"></NumericUpDown>
+				<NumericUpDown Name="PlayersCountTo" Grid.Row="1" Grid.Column="1" Minimum="2" Maximum="6" FormatString="0" Value="2"></NumericUpDown>
+			</Grid>
+
+			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="10">Start cards count</TextBlock>
+
+			<Grid DockPanel.Dock="Top">
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+
+				<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0">From</TextBlock>
+				<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1">To</TextBlock>
+
+				<NumericUpDown Grid.Row="1" Grid.Column="0" Minimum="2" Maximum="6" FormatString="0" Value="2"></NumericUpDown>
+				<NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="2" Maximum="6" FormatString="0" Value="2"></NumericUpDown>
+			</Grid>
+
+			<Button HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Bottom">Create lobby</Button>
+
+			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Padding="10">Deck type</TextBlock>
+			<ToggleButton VerticalAlignment="Top" Margin="5" HorizontalAlignment="Center" DockPanel.Dock="Left"> Common </ToggleButton>
+			<ToggleButton VerticalAlignment="Top" Margin="5" HorizontalAlignment="Center" DockPanel.Dock="Left"> Extended </ToggleButton>
+		</DockPanel>
+
+		<ListBox DockPanel.Dock="Right" ItemsSource="{Binding Lobbies} ">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<DockPanel LastChildFill="True">
+						<TextBlock DockPanel.Dock="Top" Text="{Binding Name}"/>
+						<Button DockPanel.Dock="Bottom">Join lobby</Button>
+						<TextBlock DockPanel.Dock="Bottom" Text="{Binding Settings.PlayersStartCardsCount, StringFormat='Start count of cards: {0}'}"/>
+						<TextBlock DockPanel.Dock="Bottom" IsVisible="{Binding HasPassword}">Has password</TextBlock>
+						<TextBlock DockPanel.Dock="Bottom" Text="{Binding Settings.DeckType, StringFormat='Deck type: {0}'}"/>
+						<TextBlock DockPanel.Dock="Bottom" IsVisible="{Binding !HasPassword}">Hasn't password</TextBlock>
+						<TextBlock DockPanel.Dock="Left" Text="{Binding JoinedPlayersCount, StringFormat='Players: {0}/'}"/>
+						<TextBlock DockPanel.Dock="Left" Text="{Binding Settings.PlayersCount}"/>
+					</DockPanel>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+
+
+	</DockPanel>
 </UserControl>

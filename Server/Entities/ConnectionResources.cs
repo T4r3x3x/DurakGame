@@ -1,11 +1,13 @@
 ﻿using Grpc.Core;
 
+using System.Collections.Concurrent;
+
 namespace Server.Entities
 {
     public class ConnectionResources
     {
-        public Dictionary<Guid, User> Users { get; set; } = new(); //todo клиент может не вызвать disconnect, удалять автоматически через сутки после подключения? (квартц?)
-        public Dictionary<Guid, Lobby> Lobbies { get; set; } = new();
+        public ConcurrentDictionary<Guid, User> Users { get; set; } = new(); //todo клиент может не вызвать disconnect, удалять автоматически через сутки после подключения? (квартц?)
+        public ConcurrentDictionary<Guid, Lobby> Lobbies { get; set; } = new();
 
         public User GetUser(string guidString)
         {

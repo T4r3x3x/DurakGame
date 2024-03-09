@@ -1,7 +1,3 @@
-using AutoMapper;
-
-using Common.Utilities;
-
 using Server.Entities;
 using Server.Services;
 using Server.Utilities;
@@ -9,12 +5,7 @@ using Server.Utilities;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddGrpc();
-var config = new MapperConfiguration(
-    cfg =>
-    {
-        cfg.AddProfile<CommonMappingProfile>();
-        cfg.AddProfile<ServerMappingProfile>();
-    });
+; builder.Services.AddSingleton(MappingProfilesRegister.GetMapper());
 builder.Services.AddSingleton<ConnectionResources>();
 
 var app = builder.Build();

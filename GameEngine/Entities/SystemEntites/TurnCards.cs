@@ -30,11 +30,11 @@ namespace GameEngine.Entities.SystemEntites
 
         public bool AllCardsFilled => _attackCards.Count == _deffenceCards.Count;
 
-        public bool IsDeffenceStarted => _deffenceCards.Where(card => (object)card != null).Count() > 0;
+        public bool IsDeffenceStarted => _deffenceCards.Where(card => card is not null).Count() > 0;
 
         public bool HasCardWithRank(Card.Rank rank) => _attackCards.Concat(_deffenceCards).Where(card => card?.RankValue == rank).Count() > 0;
 
-        public bool IsCardFilled(int position) => (object)_deffenceCards[position] != null;
+        public bool IsCardFilled(int position) => _deffenceCards[position] is not null;
 
         public List<Card> GetAll() => _attackCards.Concat(_deffenceCards).ToList();
 

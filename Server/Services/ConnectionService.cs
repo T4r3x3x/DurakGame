@@ -25,7 +25,7 @@ namespace Server.Services
         {
             Guid userId = Guid.NewGuid();
             User user = new User { Guid = userId, NickName = request.NickName };
-            _resources.Users.Add(userId, user);
+            _resources.Users.TryAdd(userId, user);
 
             _logger.LogInformation($"User {user.NickName} with id: {user.Guid} has been connected!");
 
@@ -35,7 +35,7 @@ namespace Server.Services
         public override Task<Empty> Disconnect(DisconnectRequest request, ServerCallContext context)
         {
             var user = _resources.GetUser(request.Id);
-            _resources.Users.Remove(Guid.Parse(request.Id));
+            _resources.Users.Remove(Guid.Parse(request.Id), out var deletedUser);
 
             _logger.LogInformation($"User {user.NickName} with id: {user.Guid} has been disconnected!");
 

@@ -10,10 +10,8 @@ namespace Server.Utilities
     {
         public ServerMappingProfile()
         {
-            CreateMap<User, PlayerModel>();
-            CreateMap<PlayerModel, User>();
-            CreateMap<Lobby, LobbyModel>();
-            CreateMap<LobbyModel, Lobby>();
+            CreateMap<User, PlayerModel>().ReverseMap();
+            CreateMap<Lobby, LobbyModel>().ReverseMap();
         }
     }
 }

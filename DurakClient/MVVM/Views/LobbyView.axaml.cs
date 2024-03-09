@@ -7,7 +7,7 @@ using ReactiveUI;
 
 namespace DurakClient.MVVM.Views;
 
-public partial class LobbyView : ReactiveUserControl<LobbyViewModel>
+public partial class LobbyView : ReactiveUserControl<LobbiesViewModel>
 {
     public LobbyView()
     {

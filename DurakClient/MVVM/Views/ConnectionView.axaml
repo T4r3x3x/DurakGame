@@ -20,7 +20,7 @@
 						<RowDefinition Height="Auto"></RowDefinition>
 					</Grid.RowDefinitions>
 					<TextBlock Grid.Row="0" Text="Nu eto Avaloniya" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-					<MaskedTextBox Grid.Row="1" Watermark="Nickname" AsciiOnly="True" Text="{Binding Nickname}"
+					<MaskedTextBox MinWidth="90" MaxLength="10" Grid.Row="1" Watermark="Nickname" Text="{Binding Nickname}"
 					HorizontalAlignment="Center" VerticalAlignment="Center"/>
 					<Button Grid.Row="2" Command="{Binding ConnectCommand}" HorizontalAlignment="Center" >Connect</Button>
 				</Grid>

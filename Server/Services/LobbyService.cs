@@ -49,7 +49,7 @@ namespace Server.Services
                 Settings = settings
             };
             lobby.Players.Add(creator);
-            _resources.Lobbies.Add(lobby.Guid, lobby);
+            _resources.Lobbies.TryAdd(lobby.Guid, lobby);
 
             _logger.LogInformation($"Lobby {lobby.Guid} has been created!");
 
@@ -61,7 +61,7 @@ namespace Server.Services
         public override Task<Empty> DeleteLobby(ActionRequest request, ServerCallContext context)
         {
             var guid = ConnectionResources.ParseGuid(request.LobbyId);
-            _resources.Lobbies.Remove(guid);
+            _resources.Lobbies.TryRemove(guid, out var deletedLobby);
 
             _logger.LogInformation($"Lobby {guid} has been deleted!");
 
