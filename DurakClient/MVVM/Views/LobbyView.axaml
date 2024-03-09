@@ -13,12 +13,10 @@
 
 		<DockPanel DockPanel.Dock="Left">
 			<TextBlock HorizontalAlignment="Center" Padding="10" DockPanel.Dock="Top">Filters</TextBlock>
-			<TextBox DockPanel.Dock="Top" Watermark="Lobby name"></TextBox>
+			<TextBox DockPanel.Dock="Top" Text="{Binding FilterViewModel.FilterName}" Watermark="Lobby name"></TextBox>
 
 			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Padding="10">Settings</TextBlock>
-
 			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Padding="10">Players count</TextBlock>
-
 
 			<Grid DockPanel.Dock="Top">
 				<Grid.RowDefinitions>
@@ -32,9 +30,13 @@
 
 				<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0">From</TextBlock>
 				<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1">To</TextBlock>
-				
-				<NumericUpDown Name="PlayersCountFrom" Grid.Row="1" Grid.Column="0" Minimum="2" Maximum="6" FormatString="0" Value="2"></NumericUpDown>
-				<NumericUpDown Name="PlayersCountTo" Grid.Row="1" Grid.Column="1" Minimum="2" Maximum="6" FormatString="0" Value="2"></NumericUpDown>
+
+				<NumericUpDown Name="PlayersCountFrom" Grid.Row="1" Grid.Column="0" Minimum="{Binding FilterViewModel.MinPlayersCount, Mode=OneTime}"
+							   Maximum="{Binding FilterViewModel.MaxPlayersCount}" FormatString="0" 
+							   Value="{Binding FilterViewModel.MinPlayersCount}"/>
+				<NumericUpDown Name="PlayersCountTo" Grid.Row="1" Grid.Column="1" Minimum="{Binding FilterViewModel.MinPlayersCount}"
+							   Maximum="{Binding FilterViewModel.MaxPlayersCount, Mode=OneTime}" FormatString="0" 
+							   Value="{Binding FilterViewModel.MaxPlayersCount}"/>
 			</Grid>
 
 			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="10">Start cards count</TextBlock>
@@ -52,8 +54,12 @@
 				<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0">From</TextBlock>
 				<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1">To</TextBlock>
 
-				<NumericUpDown Grid.Row="1" Grid.Column="0" Minimum="2" Maximum="6" FormatString="0" Value="2"></NumericUpDown>
-				<NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="2" Maximum="6" FormatString="0" Value="2"></NumericUpDown>
+				<NumericUpDown Grid.Row="1" Grid.Column="0" Minimum="{Binding FilterViewModel.MinStartCardsCount, Mode=OneTime}"
+							   Maximum="{Binding FilterViewModel.MaxStartCardsCount}" FormatString="0" 
+							   Value="{Binding FilterViewModel.MinStartCardsCount}"/>
+				<NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="{Binding FilterViewModel.MinStartCardsCount}"
+							   Maximum="{Binding FilterViewModel.MaxStartCardsCount, Mode=OneTime}" FormatString="0" 
+							   Value="{Binding FilterViewModel.MaxStartCardsCount}"/>
 			</Grid>
 
 			<Button HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Bottom">Create lobby</Button>
@@ -79,7 +85,5 @@
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>
-
-
 	</DockPanel>
 </UserControl>

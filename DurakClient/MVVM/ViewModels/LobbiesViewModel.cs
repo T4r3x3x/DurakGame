@@ -159,6 +159,7 @@ namespace DurakClient.MVVM.ViewModels
                 }
             },
         ];
+        public FilterViewModel FilterViewModel { get; set; } = new();//TODO внедрять
         public string UrlPathSegment { get; } = "Lobbies list";
         public IScreen HostScreen { get; }
 
