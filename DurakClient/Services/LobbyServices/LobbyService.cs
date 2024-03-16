@@ -19,17 +19,17 @@ namespace DurakClient.Services.LobbyServices
     public class LobbyService : ILobbyService
     {
         private readonly LobbyServiceClient _lobbyService;
-        private readonly Guid _userId;
         private readonly IMapper _mapper;
+        private readonly Resources _resources;
 
         private static readonly Empty s_empty = new Empty();
 
         private readonly BehaviorSubject<List<Lobby>> _lobbySubject;
 
-        public LobbyService(LobbyServiceClient clientService, Guid guid, IMapper mapper)
+        public LobbyService(LobbyServiceClient clientService, Resources resources, IMapper mapper)
         {
             _lobbyService = clientService;
-            _userId = guid;
+            _resources = resources;
             _mapper = mapper;
         }
 
@@ -105,7 +105,7 @@ namespace DurakClient.Services.LobbyServices
             return new ActionRequest
             {
                 LobbyId = lobbyId.ToString(),
-                SenderId = _userId.ToString()
+                SenderId = _resources.Guid.ToString()
             };
         }
     }

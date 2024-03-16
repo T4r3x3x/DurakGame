@@ -160,6 +160,7 @@ namespace DurakClient.MVVM.ViewModels
             },
         ];
         public FilterViewModel FilterViewModel { get; set; } = new();//TODO внедрять
+        public CreateLobbyViewModel CreateLobbyViewModel { get; set; } = new();
         public string UrlPathSegment { get; } = "Lobbies list";
         public IScreen HostScreen { get; }
 
@@ -168,7 +169,7 @@ namespace DurakClient.MVVM.ViewModels
         public LobbiesViewModel(IScreen hostScreen, ILobbyService lobbyService = null)
         {
             HostScreen = hostScreen;
-            _lobbyService = lobbyService ?? Locator.Current.GetService<ILobbyService>();
+            _lobbyService = lobbyService ?? Locator.Current.GetService<ILobbyService>(); //TODO переделать на ioc-container
             GetAllLobbies = ReactiveCommand.Create(GetAllLobies);
         }
 

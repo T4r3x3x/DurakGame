@@ -18,7 +18,7 @@ public class ConnectionViewModel : ViewModelBase, IScreen
         set
         {
             //так как AsciiOnly не работает, удаляем ручками всё, что не латинские буквы.
-            var regex = new Regex(@"[^a-zA-Z]");
+            var regex = new Regex(@"[^a-zA-Z]"); //вынести это куда-нибудь
             value = regex.Replace(value, string.Empty);
             this.RaiseAndSetIfChanged(ref _nickname, value);
         }

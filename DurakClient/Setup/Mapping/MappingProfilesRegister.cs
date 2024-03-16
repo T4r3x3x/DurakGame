@@ -2,7 +2,7 @@
 
 using Common.Utilities;
 
-namespace Server.Utilities
+namespace DurakClient.Utilities
 {
     public class MappingProfilesRegister
     {
@@ -12,7 +12,6 @@ namespace Server.Utilities
                 cfg =>
                   {
                       cfg.AddProfile<CommonMappingProfile>();
-                      cfg.AddProfile<ServerMappingProfile>();
                   });
             return config.CreateMapper();
         }

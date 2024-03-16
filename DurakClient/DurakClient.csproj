@@ -27,8 +27,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="MVVM\Views\ConnectionView.axaml.cs">
+	  <Compile Update="MVVM\ViewModels\Views\ConnectionView.axaml.cs">
 	    <DependentUpon>ConnectionView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="MVVM\ViewModels\Views\LobbiesView.axaml.cs">
+	    <DependentUpon>LobbiesView.axaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
  

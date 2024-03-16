@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="DurakClient.MVVM.Views.FilterView"
+			 xmlns:vm="using:DurakClient.MVVM.ViewModels.FilterViewModel">
+	
+	<DockPanel DockPanel.Dock="Left">
+		<TextBlock HorizontalAlignment="Center" Padding="10" DockPanel.Dock="Top">Filters</TextBlock>
+		<TextBox DockPanel.Dock="Top" Text="{Binding FilterViewModel.FilterName}" Watermark="Lobby name"></TextBox>
+
+		<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Padding="10">Settings</TextBlock>
+		<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Padding="10">Players count</TextBlock>
+
+		<Grid DockPanel.Dock="Top">
+			<Grid.RowDefinitions>
+				<RowDefinition/>
+				<RowDefinition/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+
+			<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0">From</TextBlock>
+			<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1">To</TextBlock>
+
+			<NumericUpDown Name="PlayersCountFrom" Grid.Row="1" Grid.Column="0" Minimum="{Binding FilterViewModel.MinPlayersCount, Mode=OneTime}"
+						   Maximum="{Binding FilterViewModel.MaxPlayersCount}" FormatString="0"
+						   Value="{Binding FilterViewModel.MinPlayersCount}"/>
+			<NumericUpDown Name="PlayersCountTo" Grid.Row="1" Grid.Column="1" Minimum="{Binding FilterViewModel.MinPlayersCount}"
+						   Maximum="{Binding FilterViewModel.MaxPlayersCount, Mode=OneTime}" FormatString="0"
+						   Value="{Binding FilterViewModel.MaxPlayersCount}"/>
+		</Grid>
+
+		<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="10">Start cards count</TextBlock>
+
+		<Grid DockPanel.Dock="Top">
+			<Grid.RowDefinitions>
+				<RowDefinition/>
+				<RowDefinition/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+
+			<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0">From</TextBlock>
+			<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1">To</TextBlock>
+
+			<NumericUpDown Grid.Row="1" Grid.Column="0" Minimum="{Binding FilterViewModel.MinStartCardsCount, Mode=OneTime}"
+						   Maximum="{Binding FilterViewModel.MaxStartCardsCount}" FormatString="0"
+						   Value="{Binding FilterViewModel.MinStartCardsCount}"/>
+			<NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="{Binding FilterViewModel.MinStartCardsCount}"
+						   Maximum="{Binding FilterViewModel.MaxStartCardsCount, Mode=OneTime}" FormatString="0"
+						   Value="{Binding FilterViewModel.MaxStartCardsCount}"/>
+		</Grid>
+
+		<Button Command="{Binding FilterViewModel.ResetCommand}" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Bottom">Reset</Button>
+
+		<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Padding="10">Deck type</TextBlock>
+		<ToggleButton IsChecked="{Binding FilterViewModel.IsAllowCommonDeckType}" VerticalAlignment="Top" Margin="5" HorizontalAlignment="Center" DockPanel.Dock="Left"> Common </ToggleButton>
+		<ToggleButton IsChecked="{Binding FilterViewModel.IsAllowExtendedDeckType}" VerticalAlignment="Top" Margin="5" HorizontalAlignment="Center" DockPanel.Dock="Left"> Extended </ToggleButton>
+	</DockPanel>
+</UserControl>

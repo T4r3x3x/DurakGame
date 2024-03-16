@@ -1,0 +1,38 @@
+<UserControl
+		xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:DurakClient.MVVM.ViewModels"
+		xmlns:views="clr-namespace:DurakClient.MVVM.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="DurakClient.MVVM.Views.LobbiesView"
+	    x:DataType="vm:LobbiesViewModel">
+
+	<DockPanel>
+		<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10" Grid.Row="0">Avaliable lobbies list</TextBlock>
+
+		<views:FilterView/>
+
+		<views:CreateLobbyView DockPanel.Dock="Right" />
+			
+		<ListBox DockPanel.Dock="Right" ItemsSource="{Binding Lobbies} ">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<DockPanel LastChildFill="True">
+						<TextBlock DockPanel.Dock="Top" Text="{Binding Name}"/>
+						<Button DockPanel.Dock="Bottom">Join lobby</Button>
+						<TextBlock DockPanel.Dock="Bottom" Text="{Binding Settings.PlayersStartCardsCount, StringFormat='Start count of cards: {0}'}"/>
+						<TextBlock DockPanel.Dock="Bottom" IsVisible="{Binding HasPassword}">Has password</TextBlock>
+						<TextBlock DockPanel.Dock="Bottom" Text="{Binding Settings.DeckType, StringFormat='Deck type: {0}'}"/>
+						<TextBlock DockPanel.Dock="Bottom" IsVisible="{Binding !HasPassword}">Hasn't password</TextBlock>
+						<TextBlock DockPanel.Dock="Left" Text="{Binding JoinedPlayersCount, StringFormat='Players: {0}/'}"/>
+						<TextBlock DockPanel.Dock="Left" Text="{Binding Settings.PlayersCount}"/>
+					</DockPanel>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+	
+		
+	</DockPanel>
+</UserControl>

@@ -5,7 +5,7 @@ using Server.Utilities;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddGrpc();
-; builder.Services.AddSingleton(MappingProfilesRegister.GetMapper());
+builder.Services.AddSingleton(MappingProfilesRegister.GetMapper());
 builder.Services.AddSingleton<ConnectionResources>();
 
 var app = builder.Build();

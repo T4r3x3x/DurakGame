@@ -11,7 +11,7 @@ namespace DurakClient.Utilities
     {
         public IViewFor ResolveView<T>(T viewModel, string? contract = null) => viewModel switch
         {
-            LobbiesViewModel context => new LobbyView { DataContext = context },
+            LobbiesViewModel context => new LobbiesView { DataContext = context },
             _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
         };
     }
