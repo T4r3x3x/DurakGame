@@ -16,10 +16,11 @@
 
 		<views:CreateLobbyView DockPanel.Dock="Right" />
 			
-		<ListBox DockPanel.Dock="Right" ItemsSource="{Binding Lobbies} ">
+		<ListBox DockPanel.Dock="Right" ItemsSource="{Binding Lobbies^} ">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<DockPanel LastChildFill="True">
+					
+					<DockPanel LastChildFill="True">						
 						<TextBlock DockPanel.Dock="Top" Text="{Binding Name}"/>
 						<Button DockPanel.Dock="Bottom">Join lobby</Button>
 						<TextBlock DockPanel.Dock="Bottom" Text="{Binding Settings.PlayersStartCardsCount, StringFormat='Start count of cards: {0}'}"/>

@@ -1,23 +1,18 @@
-﻿using DurakClient.Extensions;
-using DurakClient.MVVM.Models;
+﻿using DurakClient.MVVM.Models;
+using DurakClient.Services.LobbyServices;
 using DurakClient.Utilities;
-
-using GameEngine.Entities.SystemEntites;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
 
 namespace DurakClient.MVVM.ViewModels
 {
     public class FilterViewModel : ViewModelBase
     {
-        private List<Lobby> _lobbies;
+        private readonly ILobbyService _lobbyService;
 
         [Reactive] public string FilterName { get; set; } = DefaultValues.DefaultName;
         [Reactive] public int MinPlayersCount { get; set; } = DefaultValues.DefaultMinPlayersCount;
@@ -26,23 +21,24 @@ namespace DurakClient.MVVM.ViewModels
         [Reactive] public int MaxStartCardsCount { get; set; } = DefaultValues.DefaultMaxStartCardsCount;
         [Reactive] public bool IsAllowCommonDeckType { get; set; } = DefaultValues.DefaultAllowCommonDeckType;
         [Reactive] public bool IsAllowExtendedDeckType { get; set; } = DefaultValues.DefaultAllowExtendedDeckType;
-        public ReactiveCommand<Unit, Unit> ResetCommand { get; set; }
-        public IObservable<IEnumerable<Lobby>> Lobbies { get; init; }
 
+        public ReactiveCommand<Unit, Unit> ResetCommand { get; }
+        public IObservable<Filter> Filter { get; }
 
-        public FilterViewModel()
+        public FilterViewModel(ILobbyService lobbyService)
         {
+            _lobbyService = lobbyService;
             ResetCommand = ReactiveCommand.Create(Reset);
-            Lobbies = this.WhenAnyValue(
-                x => x.FilterName,
-                x => x.MinPlayersCount,
-                x => x.MaxPlayersCount,
-                x => x.MinStartCardsCount,
-                x => x.MaxStartCardsCount,
-                x => x.IsAllowCommonDeckType,
-                x => x.IsAllowExtendedDeckType,
-                FilterLobby).
-                Throttle(TimeSpan.FromSeconds(1));
+
+            Filter = this.WhenAnyValue(
+                     x => x.FilterName,
+                     x => x.MinPlayersCount,
+                     x => x.MaxPlayersCount,
+                     x => x.MinStartCardsCount,
+                     x => x.MaxStartCardsCount,
+                     x => x.IsAllowCommonDeckType,
+                     x => x.IsAllowExtendedDeckType,
+                     selector: (a, b, c, d, e, f, g) => new Filter(a, b, c, d, e, f, g));
         }
 
         private void Reset()
@@ -54,17 +50,6 @@ namespace DurakClient.MVVM.ViewModels
             MaxStartCardsCount = DefaultValues.DefaultMaxStartCardsCount;
             IsAllowCommonDeckType = DefaultValues.DefaultAllowCommonDeckType;
             IsAllowExtendedDeckType = DefaultValues.DefaultAllowExtendedDeckType;
-        }
-
-        private IEnumerable<Lobby> FilterLobby(string name, int minPlayersCount, int maxPlayersCount, int minStartCardsCount,
-            int maxStartCardsCount, bool isAllowCommonDeckType, bool isAllowExtendedDeckType)
-        {
-            return _lobbies.
-                WhereIf(!string.IsNullOrWhiteSpace(FilterName), lobby => lobby.Name == name).
-                Where(lobby => lobby.Settings.PlayersCount >= minPlayersCount && lobby.Settings.PlayersCount <= maxPlayersCount).
-                Where(lobby => lobby.Settings.PlayersStartCardsCount >= minStartCardsCount && lobby.Settings.PlayersStartCardsCount <= maxStartCardsCount).
-                WhereIf(isAllowCommonDeckType, lobby => lobby.Settings.DeckType == DeckType.Common).
-                WhereIf(isAllowExtendedDeckType, lobby => lobby.Settings.DeckType == DeckType.Extended);
         }
     }
 }

@@ -2,15 +2,10 @@
 
 using ReactiveUI;
 
-using System;
-
 namespace DurakClient.Factories.ViewModelFactories.Implementations
 {
     internal class CreateLobbyViewModelFactory : IViewModelFactory<CreateLobbyViewModel>
     {
-        public CreateLobbyViewModel GetViewModel(IScreen hotScreen)
-        {
-            throw new NotImplementedException();
-        }
+        public CreateLobbyViewModel GetViewModel(IScreen hotScreen) => new CreateLobbyViewModel();
     }
 }

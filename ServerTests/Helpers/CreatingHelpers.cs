@@ -1,6 +1,7 @@
 ﻿using GameEngine.Entities.SystemEntites;
 
 using Server.Entities;
+using Server.Services;
 
 namespace ServerTests.Helpers
 {

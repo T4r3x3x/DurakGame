@@ -1,4 +1,5 @@
 ﻿using DurakClient.MVVM.ViewModels;
+using DurakClient.Services.LobbyServices;
 
 using ReactiveUI;
 
@@ -6,9 +7,13 @@ namespace DurakClient.Factories.ViewModelFactories.Implementations
 {
     internal class FilterViewModelFactory : IViewModelFactory<FilterViewModel>
     {
-        public FilterViewModel GetViewModel(IScreen hotScreen)
+        private readonly ILobbyService _lobbyService;
+
+        public FilterViewModelFactory(ILobbyService lobbyService)
         {
-            throw new System.NotImplementedException();
+            _lobbyService = lobbyService;
         }
+
+        public FilterViewModel GetViewModel(IScreen hotScreen) => new FilterViewModel(_lobbyService);
     }
 }

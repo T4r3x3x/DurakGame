@@ -14,7 +14,7 @@ service LobbyService{
 	rpc StartGame(ActionRequest) returns (google.protobuf.Empty);
 	rpc PrepareToGame(ActionRequest) returns (google.protobuf.Empty);
 	rpc KickPlayer(KickPlayerRequest) returns (google.protobuf.Empty);
-	rpc GetAllLobies(google.protobuf.Empty) returns (LobbyList);
+	rpc GetLobbiesStream(google.protobuf.Empty) returns (stream LobbyListResponce);
 }
 
 message LobbyCreateRequest{
@@ -49,25 +49,26 @@ message KickPlayerRequest{
 	string kickingPlayerId = 2;
 }
 
-message LobbyList{
-	repeated LobbyModel lobbyList = 1;
+message LobbyListResponce{
+	repeated LobbyResponce lobbyList = 1;
 }
 
 message PlayerList{
 	repeated PlayerModel playerList = 1;
 }
 
-message LobbyModel{
+message LobbyResponce{
 	string id = 1;
 	string name = 2;
 	LobbySetting settings = 3;
-	PlayerList playerList = 4;
+	bool hasPassword = 4;
+	int32 joindePlayersCount = 5;
 }
 
 message LobbySetting{
 	int32 playersCount = 1;
 	DeckType deckType = 2;
-	int32 playersStartCount = 3;
+	int32 playersStartCardsCount = 3;
 }
 
 enum DeckType{

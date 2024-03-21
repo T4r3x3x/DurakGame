@@ -1,13 +1,49 @@
 ﻿using Grpc.Core;
 
-using System.Collections.Concurrent;
+using Server.Services;
 
 namespace Server.Entities
 {
     public class ConnectionResources
     {
-        public ConcurrentDictionary<Guid, User> Users { get; set; } = new(); //todo клиент может не вызвать disconnect, удалять автоматически через сутки после подключения? (квартц?)
-        public ConcurrentDictionary<Guid, Lobby> Lobbies { get; set; } = new();
+        public NotifyingConcurrentDictionary<Guid, User> Users { get; set; } = new(); //todo клиент может не вызвать disconnect, удалять автоматически через сутки после подключения? (квартц?)
+        public NotifyingConcurrentDictionary<Guid, Lobby> Lobbies { get; set; } = new();
+
+        public ConnectionResources()
+        {
+            Lobbies = LobbiesCreatorForTest();
+        }
+
+        private NotifyingConcurrentDictionary<Guid, Lobby> LobbiesCreatorForTest()
+        {
+            var result = new NotifyingConcurrentDictionary<Guid, Lobby>();
+            for (int i = 0; i < 10; i++)
+            {
+                var guid = Guid.NewGuid();
+                var lobby = new Lobby()
+                {
+                    Guid = guid,
+                    Name = i.ToString(),
+                    Owner = null,
+                    Players = new List<User>(),
+                    Password = i % 2 == 0 ? null : i.ToString(),
+                    Settings = new()
+                    {
+                        DeckType = i % 2 == 0 ? GameEngine.Entities.SystemEntites.DeckType.Common : GameEngine.Entities.SystemEntites.DeckType.Extended,
+                        PlayersCount = i,
+                        PlayersStartCardsCount = i
+                    }
+                };
+                for (int j = 0; j < i; j++)
+                    lobby.Players.Add(new User()
+                    {
+                        Guid = guid,
+                        NickName = j.ToString()
+                    });
+                result.TryAdd(guid, lobby);
+            }
+            return result;
+        }
 
         public User GetUser(string guidString)
         {

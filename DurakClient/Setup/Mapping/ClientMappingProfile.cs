@@ -4,16 +4,13 @@ using Connections.Services;
 
 using DurakClient.MVVM.Models;
 
-using GameEngine.Entities.GameEntities;
-
-namespace DurakClient.Utilities
+namespace DurakClient.Setup.Mapping
 {
     public class ClientMappingProfile : Profile
     {
         public ClientMappingProfile()
         {
-            CreateMap<Lobby, LobbyResponce>().ReverseMap();
-            CreateMap<Card, CardMessage>().ReverseMap();
+            CreateMap<LobbyResponce, Lobby>();
         }
     }
 }

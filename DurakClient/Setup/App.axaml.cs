@@ -4,6 +4,8 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
+using DurakClient.Factories.ViewModelFactories;
+using DurakClient.MVVM.ViewModels;
 using DurakClient.MVVM.Views;
 using DurakClient.Setup.DI.ContainerRegisters;
 using DurakClient.Setup.DI.LocatorRegisters;
@@ -36,6 +38,9 @@ public partial class App : Application
         var container = builder.Build();
         LocatorRegister.RegisterViewModelFactories(container);
         Locator.CurrentMutable.RegisterLazySingleton(() => new CustomViewLocator(), typeof(IViewLocator));
+
+        var vm = container.Resolve<IViewModelFactory<ConnectionViewModel>>().GetViewModel(null!);
+        Locator.CurrentMutable.RegisterConstant<IScreen>(vm);
         new ConnectionView { DataContext = Locator.Current.GetService<IScreen>() }.Show();
 
         base.OnFrameworkInitializationCompleted();

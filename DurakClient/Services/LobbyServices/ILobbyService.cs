@@ -8,7 +8,9 @@ namespace DurakClient.Services.LobbyServices
 {
     public interface ILobbyService
     {
-        public Task<List<Lobby>> GetAllLobby();
+        public IObservable<IEnumerable<Lobby>> Lobbies { get; }
+        public void StartListiningLobbies();
+        public void StopListiningLobbies();
         public Task CreateLobby(LobbyCreateModel createModel);
         public Task DeleteLobby(Guid lobbyId);
         public Task JoinLobby(Guid lobbyId, string? password);

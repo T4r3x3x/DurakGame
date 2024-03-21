@@ -12,6 +12,7 @@ namespace DurakClient.Utilities
                 cfg =>
                   {
                       cfg.AddProfile<CommonMappingProfile>();
+                      cfg.AddProfile<ClientMappingProfile>();
                   });
             return config.CreateMapper();
         }

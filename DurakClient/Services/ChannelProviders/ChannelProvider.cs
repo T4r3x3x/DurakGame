@@ -3,12 +3,12 @@ using Grpc.Net.Client;
 
 using System.Net.Http;
 
-namespace DurakClient.Setup.ChannelProviders
+namespace DurakClient.Services.ChannelProviders
 {
     internal class ChannelProvider : IChannelProvider
     {
         // TODO: Доставать из конфига
-        private const string SERVER_ADDRESS = "https://192.168.0.19:5058/";
+        private const string SERVER_ADDRESS = "https://localhost:5058";
 
         public CallInvoker GetInvoker()
         {

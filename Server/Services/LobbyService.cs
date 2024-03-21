@@ -12,25 +12,26 @@ using Grpc.Core;
 
 using Server.Entities;
 
-using System.Collections.ObjectModel;
-
 namespace Server.Services
 {
     public class LobbyService : Connections.Services.LobbyService.LobbyServiceBase
     {
         private readonly IMapper _mapper;
-        private readonly GameService _gameService;
+        //   private readonly GameService _gameService;
         private readonly ConnectionResources _resources;
         private readonly ILogger<LobbyService> _logger;
+        private readonly LobbyListResponce _lobbyListResponce = new();
 
         private static readonly Empty s_empty = new();
 
-        public LobbyService(ILogger<LobbyService> logger, IMapper mapper, GameService gameService, ConnectionResources resources)
+        public LobbyService(ILogger<LobbyService> logger, IMapper mapper, /*GameService gameService,*/ ConnectionResources resources)
         {
             _logger = logger;
             _mapper = mapper;
-            _gameService = gameService;
+            // _gameService = gameService;
             _resources = resources;
+            _resources.Lobbies.OnDataChanged += LobbyListUpdate;
+            LobbyListUpdate(_resources.Lobbies);
         }
 
         public override async Task CreateLobby(LobbyCreateRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
@@ -45,7 +46,7 @@ namespace Server.Services
                 Owner = creator,
                 Name = request.Name,
                 Password = request.Password,
-                Players = new ObservableCollection<User>(),
+                Players = new List<User>(),
                 Settings = settings
             };
             lobby.Players.Add(creator);
@@ -61,18 +62,20 @@ namespace Server.Services
         public override Task<Empty> DeleteLobby(ActionRequest request, ServerCallContext context)
         {
             var guid = ConnectionResources.ParseGuid(request.LobbyId);
-            _resources.Lobbies.TryRemove(guid, out var deletedLobby);
+            _resources.Lobbies.Remove(guid, out var deletedLobby);
 
             _logger.LogInformation($"Lobby {guid} has been deleted!");
 
             return Task.FromResult(s_empty);
         }
 
-        public override Task<LobbyList> GetAllLobies(Empty request, ServerCallContext context)
+        public override async Task GetLobbiesStream(Empty request, IServerStreamWriter<LobbyListResponce> responseStream, ServerCallContext context)
         {
-            LobbyList lobbyList = new LobbyList();
-            lobbyList.LobbyList_.AddRange(_resources.Lobbies.Select(x => _mapper.Map<LobbyModel>(x.Value)));
-            return Task.FromResult(lobbyList);
+            while (!context.CancellationToken.IsCancellationRequested)
+            {
+                responseStream.WriteAsync(_lobbyListResponce);
+                await Task.Delay(1000);
+            }
         }
 
         public override async Task JoinLobby(JoinRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
@@ -149,11 +152,17 @@ namespace Server.Services
 
             var gameFactory = new GameFactory();
             lobby.Game = gameFactory.GetGameManager(lobby.Settings, new FisherYatesShuffler<GameEngine.Entities.GameEntities.Card>());
-            _gameService.StartGame(lobby.Game);
+            //  _gameService.StartGame(lobby.Game);
 
             _logger.LogInformation($"Game has been started in lobby {lobby.Guid}!");
 
             return Task.FromResult(s_empty);
+        }
+
+        private void LobbyListUpdate(IEnumerable<KeyValuePair<Guid, Lobby>> lobbies)
+        {
+            _lobbyListResponce.LobbyList.Clear();
+            _lobbyListResponce.LobbyList.AddRange(_resources.Lobbies.Select(x => _mapper.Map<LobbyResponce>(x.Value)));
         }
     }
 }

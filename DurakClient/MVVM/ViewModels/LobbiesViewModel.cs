@@ -1,180 +1,53 @@
-﻿using DurakClient.MVVM.Models;
+﻿using DurakClient.Extensions;
+using DurakClient.Factories.ViewModelFactories;
+using DurakClient.MVVM.Models;
 using DurakClient.Services.LobbyServices;
 
+using GameEngine.Entities.SystemEntites;
+
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 using Splat;
 
+using System;
 using System.Collections.Generic;
-using System.Reactive;
+using System.Linq;
+using System.Reactive.Linq;
 
 namespace DurakClient.MVVM.ViewModels
 {
     public class LobbiesViewModel : ViewModelBase, IRoutableViewModel
     {
-        [Reactive]
-        public List<Lobby> Lobbies { get; private set; } = [new Lobby()
-        {
-            Name = "First",
-            HasPassword = false,
-            JoinedPlayersCount = 0,
-            Settings = new()
-            {
-                DeckType = GameEngine.Entities.SystemEntites.DeckType.Common,
-                PlayersCount = 2,
-                PlayersStartCardsCount = 3
-            }
-        },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-            new Lobby()
-            {
-                Name = "Second",
-                HasPassword = true,
-                JoinedPlayersCount = 3,
-                Settings = new()
-                {
-                    DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                    PlayersCount = 4,
-                    PlayersStartCardsCount = 5
-                }
-            },
-        ];
-        public FilterViewModel FilterViewModel { get; set; } = new();//TODO внедрять
+        private readonly ILobbyService _lobbyService;
+
+        public IObservable<IEnumerable<Lobby>> Lobbies { get; }
+        public FilterViewModel FilterViewModel { get; set; }
         public CreateLobbyViewModel CreateLobbyViewModel { get; set; } = new();
         public string UrlPathSegment { get; } = "Lobbies list";
         public IScreen HostScreen { get; }
 
-        private readonly ILobbyService _lobbyService;
 
-        public LobbiesViewModel(IScreen hostScreen, ILobbyService lobbyService = null)
+        public LobbiesViewModel(IScreen hostScreen, ILobbyService lobbyService, FilterViewModel filterViewModel = null)
         {
             HostScreen = hostScreen;
-            _lobbyService = lobbyService ?? Locator.Current.GetService<ILobbyService>(); //TODO переделать на ioc-container
-            GetAllLobbies = ReactiveCommand.Create(GetAllLobies);
+            _lobbyService = lobbyService;
+            FilterViewModel = filterViewModel ?? Locator.Current.GetService<IViewModelFactory<FilterViewModel>>()!.GetViewModel(hostScreen);
+            Lobbies = FilterViewModel.Filter.CombineLatest(_lobbyService.Lobbies, resultSelector: FilterLobby);
+            _lobbyService.StartListiningLobbies();
+
         }
 
-        public ReactiveCommand<Unit, Unit> GetAllLobbies { get; }
+        private IEnumerable<Lobby> FilterLobby(Filter filter, IEnumerable<Lobby> lobbies)
+        {
+            return lobbies.WhereIf(!string.IsNullOrWhiteSpace(filter.FilterName), lobby => lobby.Name == filter.FilterName)
 
-        private async void GetAllLobies() => Lobbies = await _lobbyService.GetAllLobby();
+            .Where(lobby => lobby.Settings.PlayersCount.isInRange(filter.MinPlayersCount, filter.MaxPlayersCount))
+
+            .Where(lobby => lobby.Settings.PlayersStartCardsCount.isInRange(filter.MinStartCardsCount, filter.MaxStartCardsCount))
+
+            .WhereIf(!filter.IsAllowCommonDeckType, lobby => lobby.Settings.DeckType != DeckType.Common)
+
+            .WhereIf(!filter.IsAllowExtendedDeckType, lobby => lobby.Settings.DeckType != DeckType.Extended);
+        }
     }
 }

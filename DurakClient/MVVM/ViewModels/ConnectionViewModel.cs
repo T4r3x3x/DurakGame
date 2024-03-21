@@ -1,7 +1,10 @@
-﻿using DurakClient.Services;
+﻿using DurakClient.Factories.ViewModelFactories;
+using DurakClient.Services;
 using DurakClient.Services.ConnectionServices;
 
 using ReactiveUI;
+
+using Splat;
 
 using System;
 using System.Reactive;
@@ -11,6 +14,8 @@ namespace DurakClient.MVVM.ViewModels;
 
 public class ConnectionViewModel : ViewModelBase, IScreen
 {
+    private readonly IViewModelFactory<LobbiesViewModel> _lobbiesViewModelFactory;
+
     private string _nickname = string.Empty;
     public string Nickname
     {
@@ -29,10 +34,11 @@ public class ConnectionViewModel : ViewModelBase, IScreen
     private readonly IConnectionService _connectionService;
     private readonly Resources _resources;
 
-    public ConnectionViewModel(IConnectionService connectionService, Resources resources)
+    public ConnectionViewModel(IConnectionService connectionService, Resources resources, IViewModelFactory<LobbiesViewModel> lobbiesViewModelFactory = null)
     {
         _connectionService = connectionService;
         _resources = resources;
+        _lobbiesViewModelFactory = lobbiesViewModelFactory ?? Locator.Current.GetService<IViewModelFactory<LobbiesViewModel>>()!;
         ConnectCommand = ReactiveCommand.Create(Connect, isNicknameValid);
     }
 
@@ -42,7 +48,7 @@ public class ConnectionViewModel : ViewModelBase, IScreen
     {
         var guid = await _connectionService.Connect(Nickname!);
         _resources.Guid = guid;
-        Router.Navigate.Execute(new LobbiesViewModel(this)); //можно просто внедрять viewModel на которую будем переходить
+        Router.Navigate.Execute(_lobbiesViewModelFactory.GetViewModel(this));
     }
 
     private IObservable<bool> isNicknameValid => this.WhenAnyValue(
