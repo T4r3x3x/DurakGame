@@ -26,12 +26,12 @@
 			<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0">From</TextBlock>
 			<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1">To</TextBlock>
 
-			<NumericUpDown Name="PlayersCountFrom" Grid.Row="1" Grid.Column="0" Minimum="{Binding FilterViewModel.MinPlayersCount, Mode=OneTime}"
-						   Maximum="{Binding FilterViewModel.MaxPlayersCount}" FormatString="0"
-						   Value="{Binding FilterViewModel.MinPlayersCount}"/>
-			<NumericUpDown Name="PlayersCountTo" Grid.Row="1" Grid.Column="1" Minimum="{Binding FilterViewModel.MinPlayersCount}"
-						   Maximum="{Binding FilterViewModel.MaxPlayersCount, Mode=OneTime}" FormatString="0"
-						   Value="{Binding FilterViewModel.MaxPlayersCount}"/>
+			<NumericUpDown Name="PlayersCountFrom" Grid.Row="1" Grid.Column="0" Minimum="{Binding FilterViewModel.PlayersCountRange.Min, Mode=OneTime}"
+						   Maximum="{Binding FilterViewModel.PlayersCountRange.Max}" FormatString="0"
+						   Value="{Binding FilterViewModel.PlayersCountRange.Min}"/>
+			<NumericUpDown Name="PlayersCountTo" Grid.Row="1" Grid.Column="1" Minimum="{Binding FilterViewModel.PlayersCountRange.Min}"
+						   Maximum="{Binding FilterViewModel.PlayersCountRange.Max, Mode=OneTime}" FormatString="0"
+						   Value="{Binding FilterViewModel.PlayersCountRange.Max}"/>
 		</Grid>
 
 		<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="10">Start cards count</TextBlock>
@@ -49,12 +49,12 @@
 			<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0">From</TextBlock>
 			<TextBlock HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1">To</TextBlock>
 
-			<NumericUpDown Grid.Row="1" Grid.Column="0" Minimum="{Binding FilterViewModel.MinStartCardsCount, Mode=OneTime}"
-						   Maximum="{Binding FilterViewModel.MaxStartCardsCount}" FormatString="0"
-						   Value="{Binding FilterViewModel.MinStartCardsCount}"/>
-			<NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="{Binding FilterViewModel.MinStartCardsCount}"
-						   Maximum="{Binding FilterViewModel.MaxStartCardsCount, Mode=OneTime}" FormatString="0"
-						   Value="{Binding FilterViewModel.MaxStartCardsCount}"/>
+			<NumericUpDown Grid.Row="1" Grid.Column="0" Minimum="{Binding FilterViewModel.CardsStartCountRange.Min, Mode=OneTime}"
+						   Maximum="{Binding FilterViewModel.CardsStartCountRange.Max}" FormatString="0"
+						   Value="{Binding FilterViewModel.CardsStartCountRange.Min}"/>
+			<NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="{Binding FilterViewModel.CardsStartCountRange.Min}"
+						   Maximum="{Binding FilterViewModel.CardsStartCountRange.Max, Mode=OneTime}" FormatString="0"
+						   Value="{Binding FilterViewModel.CardsStartCountRange.Max}"/>
 		</Grid>
 
 		<Button Command="{Binding FilterViewModel.ResetCommand}" HorizontalAlignment="Center" Margin="10" DockPanel.Dock="Bottom">Reset</Button>

@@ -7,33 +7,45 @@
 		xmlns:views="clr-namespace:DurakClient.MVVM.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="DurakClient.MVVM.Views.LobbiesView"
-	    x:DataType="vm:LobbiesViewModel">
+	    x:DataType="vm:LobbiesViewModel"
+		xmlns:conv="using:DurakClient.Convertors">
 
+	<UserControl.Resources>
+		<conv:MultipleBindingToTupleConvertor x:Key="myConvertor" />
+	</UserControl.Resources>
+	
 	<DockPanel>
 		<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10" Grid.Row="0">Avaliable lobbies list</TextBlock>
 
-		<views:FilterView/>
+		<views:FilterView Margin="5"/>
 
-		<views:CreateLobbyView DockPanel.Dock="Right" />
+		<views:CreateLobbyView DockPanel.Dock="Right" Margin="5"/>
 			
 		<ListBox DockPanel.Dock="Right" ItemsSource="{Binding Lobbies^} ">
 			<ListBox.ItemTemplate>
-				<DataTemplate>
-					
+				<DataTemplate>					
 					<DockPanel LastChildFill="True">						
-						<TextBlock DockPanel.Dock="Top" Text="{Binding Name}"/>
-						<Button DockPanel.Dock="Bottom">Join lobby</Button>
+						<TextBlock DockPanel.Dock="Top" Text="{Binding Name}"/>						
+						<Button DockPanel.Dock="Bottom" Command="{Binding $parent[ListBox].DataContext.JoinLobbyCommand}" >
+							Join lobby
+							<Button.CommandParameter>
+								<MultiBinding Converter="{StaticResource myConvertor}">
+									<Binding ElementName="LobbyId" Path="Text"/>
+									<Binding ElementName="PasswordBox" Path="Text"/>									
+								</MultiBinding>
+							</Button.CommandParameter>
+						</Button>
+						<TextBox DockPanel.Dock="Bottom" Name="PasswordBox" IsVisible="{Binding HasPassword}" Watermark="Password" PasswordChar="*"/>
+						<TextBlock DockPanel.Dock="Bottom" Name="LobbyId" IsVisible="True" Text="{Binding Guid}"/>
 						<TextBlock DockPanel.Dock="Bottom" Text="{Binding Settings.PlayersStartCardsCount, StringFormat='Start count of cards: {0}'}"/>
 						<TextBlock DockPanel.Dock="Bottom" IsVisible="{Binding HasPassword}">Has password</TextBlock>
 						<TextBlock DockPanel.Dock="Bottom" Text="{Binding Settings.DeckType, StringFormat='Deck type: {0}'}"/>
-						<TextBlock DockPanel.Dock="Bottom" IsVisible="{Binding !HasPassword}">Hasn't password</TextBlock>
+						<TextBlock DockPanel.Dock="Bottom" IsVisible="{Binding !HasPassword}">Hasn't password</TextBlock>						
 						<TextBlock DockPanel.Dock="Left" Text="{Binding JoinedPlayersCount, StringFormat='Players: {0}/'}"/>
 						<TextBlock DockPanel.Dock="Left" Text="{Binding Settings.PlayersCount}"/>
 					</DockPanel>
 				</DataTemplate>
 			</ListBox.ItemTemplate>
-		</ListBox>
-	
-		
+		</ListBox>		
 	</DockPanel>
 </UserControl>

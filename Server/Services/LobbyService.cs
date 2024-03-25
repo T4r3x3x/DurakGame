@@ -34,15 +34,15 @@ namespace Server.Services
             LobbyListUpdate(_resources.Lobbies);
         }
 
-        public override async Task CreateLobby(LobbyCreateRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
+        public override Task<CreateLobbyResponce> CreateLobby(CreateLobbyRequest request, ServerCallContext context)
         {
-            GameSettings settings = _mapper.Map<GameSettings>(request.Settings);
+            GameSettings settings = _mapper.Map<GameSettings>(request.GameSettings);
 
             var creator = _resources.GetUser(request.CreatorId);
 
             Lobby lobby = new Lobby()
             {
-                Guid = new Guid(),
+                Guid = Guid.NewGuid(),
                 Owner = creator,
                 Name = request.Name,
                 Password = request.Password,
@@ -54,9 +54,8 @@ namespace Server.Services
 
             _logger.LogInformation($"Lobby {lobby.Guid} has been created!");
 
-            var lobbyState = _mapper.Map<LobbyState>(lobby);
-            while (!context.CancellationToken.IsCancellationRequested)
-                await responseStream.WriteAsync(lobbyState);
+            var responce = new CreateLobbyResponce() { LobbyId = lobby.Guid.ToString(), IsSuccessefully = true };
+            return Task.FromResult(responce);
         }
 
         public override Task<Empty> DeleteLobby(ActionRequest request, ServerCallContext context)
@@ -78,7 +77,7 @@ namespace Server.Services
             }
         }
 
-        public override async Task JoinLobby(JoinRequest request, IServerStreamWriter<LobbyState> responseStream, ServerCallContext context)
+        public override Task<JoinResponce> JoinLobby(JoinRequest request, ServerCallContext context)
         {
             var lobbyId = ConnectionResources.ParseGuid(request.ActionRequest.LobbyId);
             var playerId = ConnectionResources.ParseGuid(request.ActionRequest.SenderId);
@@ -98,9 +97,8 @@ namespace Server.Services
 
             _logger.LogInformation($"Player {playerId} has been joined to lobby {lobbyId}!");
 
-            var lobbyState = _mapper.Map<LobbyState>(lobby);
-            while (!context.CancellationToken.IsCancellationRequested)
-                await responseStream.WriteAsync(lobbyState);
+            var responce = new JoinResponce() { LobbyId = lobbyId.ToString(), IsSuccessefully = true };
+            return Task.FromResult(responce);
         }
 
         public override Task<Empty> KickPlayer(KickPlayerRequest request, ServerCallContext context)

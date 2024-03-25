@@ -47,7 +47,7 @@ public class ConnectionViewModel : ViewModelBase, IScreen
     private async void Connect()
     {
         var guid = await _connectionService.Connect(Nickname!);
-        _resources.Guid = guid;
+        _resources.PlayerId = guid;
         Router.Navigate.Execute(_lobbiesViewModelFactory.GetViewModel(this));
     }
 

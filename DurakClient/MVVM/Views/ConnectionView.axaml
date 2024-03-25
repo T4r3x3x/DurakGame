@@ -3,13 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:DurakClient.MVVM.ViewModels.ConnectionViewModel"
 		xmlns:app="clr-namespace:DurakClient"
+		xmlns:convertors="using:DurakClient.Convertors"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:DurakClient.MVVM.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="DurakClient.MVVM.Views.ConnectionView"
         Icon="/Assets/avalonia-logo.ico"
-        Title="DurakClient">       
+        Title="DurakClient">
+
+		<Window.Resources>
+			<convertors:MultipleBindingToTupleConvertor x:Key="myConverter"/>
+		</Window.Resources>
 	<Grid>
 		<rxui:RoutedViewHost Grid.Row="0" Router="{Binding Router}">
 			<rxui:RoutedViewHost.DefaultContent>

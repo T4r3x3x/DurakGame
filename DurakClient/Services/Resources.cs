@@ -4,6 +4,7 @@ namespace DurakClient.Services
 {
     public class Resources
     {
-        public Guid? Guid { get; set; }
+        public Guid PlayerId { get; set; } = Guid.Empty;
+        public Guid LobbyId { get; set; } = Guid.Empty;
     }
 }

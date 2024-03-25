@@ -12,8 +12,10 @@ namespace DurakClient.Utilities
     {
         public ClientMappingProfile()
         {
-            CreateMap<Lobby, LobbyResponce>().ReverseMap();
+            CreateMap<LobbyResponce, Lobby>()
+                .ForMember(x => x.Guid, opt => opt.MapFrom(x => x.Id));
             CreateMap<Card, CardMessage>().ReverseMap();
+            CreateMap<CreateLobbyModel, CreateLobbyRequest>().ReverseMap();
         }
     }
 }

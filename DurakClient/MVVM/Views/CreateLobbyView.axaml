@@ -4,19 +4,42 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="DurakClient.MVVM.Views.CreateLobbyView"
-			 xmlns:vm ="DurakClient.MVVM.ViewModels.CreateLobbyViewModel">
+			 xmlns:vm ="DurakClient.MVVM.ViewModels.CreateLobbyViewModel"
+			 xmlns:conv="using:DurakClient.Convertors"
+			 xmlns:enum ="using:GameEngine.Entities.SystemEntites">
+
+	<UserControl.Resources>
+		<conv:EnumToBooleanConverter x:Key="enumToBoolConverterKey" />
+	</UserControl.Resources>
 
 
 	<DockPanel LastChildFill="True" VerticalAlignment="Top" HorizontalAlignment="Center">
 		<TextBlock DockPanel.Dock="Top" TextAlignment="Center" Text="Create lobby"/>
-		<Button Margin="10"  HorizontalAlignment="Center" DockPanel.Dock="Bottom">Create</Button>		
-		<NumericUpDown Minimum="{Binding CreateLobbyViewModel.MinPlayersCount}" Value="{Binding CreateLobbyViewModel.MinPlayersCount}" DockPanel.Dock="Bottom"/>
+		<Button DockPanel.Dock="Bottom" Margin="10" Command="{Binding CreateLobbyViewModel.CreateLobbyCommand}"
+				HorizontalAlignment="Center">Create</Button>
+		<Button DockPanel.Dock="Bottom" Margin="10" Command="{Binding CreateLobbyViewModel.ResetCommand}"
+				HorizontalAlignment="Center">Reset</Button>
+		<NumericUpDown DockPanel.Dock="Bottom" FormatString="0"
+					   Minimum="{Binding CreateLobbyViewModel.PlayersCountRange.Min, Mode=OneTime}"
+					   Maximum="{Binding CreateLobbyViewModel.PlayersCountRange.Max, Mode=OneTime}"
+					   Value="{Binding CreateLobbyViewModel.PlayersCount}"/>
 		<TextBlock DockPanel.Dock="Bottom" TextAlignment="Center" Text="Players count"/>
-		<NumericUpDown DockPanel.Dock="Bottom"/>		
+		<NumericUpDown DockPanel.Dock="Bottom" FormatString="0"
+					   Minimum="{Binding CreateLobbyViewModel.CardsStartCountRange.Min, Mode=OneTime}"
+					   Maximum="{Binding CreateLobbyViewModel.CardsStartCountRange.Max, Mode=OneTime}"
+					   Value="{Binding CreateLobbyViewModel.CardsStartCount}" />
 		<TextBlock DockPanel.Dock="Bottom" TextAlignment="Center" Text="Start count of cards"/>
-		<TextBox Margin="10" DockPanel.Dock="Top" Watermark="Lobby name"/>
-		<TextBlock DockPanel.Dock="Left" Text="Deck type"/>
-		<ComboBox DockPanel.Dock="Left" ItemsSource="{Binding CreateLobbyViewModel.DeckType}"/>
-	
+		<TextBox DockPanel.Dock="Top" Margin="10"  Text="{Binding CreateLobbyViewModel.Name}" Watermark="Lobby name"/>
+		<TextBox DockPanel.Dock="Top" Margin="10"  PasswordChar="*" Text="{Binding CreateLobbyViewModel.Password}" Watermark="Password"/>
+			
+		
+		<RadioButton DockPanel.Dock="Bottom" GroupName="Deck type" Content="Common" 
+					 IsChecked="{Binding CreateLobbyViewModel.DeckType, Converter={StaticResource enumToBoolConverterKey},
+					 ConverterParameter={x:Static enum:DeckType.Common}, Mode=TwoWay}"/>
+		<RadioButton DockPanel.Dock="Bottom" GroupName="Deck type" Content="Extended"
+					 IsChecked="{Binding CreateLobbyViewModel.DeckType, Converter={StaticResource enumToBoolConverterKey},
+					 ConverterParameter={x:Static enum:DeckType.Extended}, Mode=TwoWay}"/>
+		<TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Text="Deck type"/>
+		
 	</DockPanel>
 </UserControl>

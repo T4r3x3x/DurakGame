@@ -14,6 +14,6 @@ namespace DurakClient.Factories.ViewModelFactories.Implementations
             _lobbyService = lobbyService;
         }
 
-        public FilterViewModel GetViewModel(IScreen hotScreen) => new FilterViewModel(_lobbyService);
+        public FilterViewModel GetViewModel(IScreen hotScreen) => new FilterViewModel();
     }
 }

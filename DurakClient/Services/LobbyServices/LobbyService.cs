@@ -7,6 +7,8 @@ using DurakClient.MVVM.Models;
 
 using Google.Protobuf.WellKnownTypes;
 
+using Grpc.Core;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,167 +43,6 @@ namespace DurakClient.Services.LobbyServices
                 .Select(x => x
                 .Select(x => _mapper.Map<Lobby>(x)));
         }
-        private async Task<IEnumerable<Lobby>> GetLobbiesForTest()
-        {
-            var a = new List<Lobby>() {
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "First",
-                    HasPassword = false,
-                    JoinedPlayersCount = 0,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Common,
-                        PlayersCount = 2,
-                        PlayersStartCardsCount = 3
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                },
-                new Lobby()
-                {
-                    Guid = Guid.NewGuid(),
-                    Name = "Second",
-                    HasPassword = true,
-                    JoinedPlayersCount = 3,
-                    Settings = new()
-                    {
-                        DeckType = GameEngine.Entities.SystemEntites.DeckType.Extended,
-                        PlayersCount = 4,
-                        PlayersStartCardsCount = 5
-                    }
-                }};
-            return a;
-        }
 
         public async void StartListiningLobbies()
         {
@@ -215,15 +56,15 @@ namespace DurakClient.Services.LobbyServices
             }
         }
 
-        public async Task CreateLobby(LobbyCreateModel createModel)
+        public async Task<bool> CreateLobby(CreateLobbyModel createModel)
         {
-            var createRequest = _mapper.Map<LobbyCreateRequest>(createModel);
-            var responceStream = _lobbyService.CreateLobby(createRequest);
+            var createRequest = _mapper.Map<CreateLobbyRequest>(createModel);
+            var responce = await _lobbyService.CreateLobbyAsync(createRequest);
 
+            if (responce.IsSuccessefully)
+                _resources.LobbyId = Guid.Parse(responce.LobbyId);
 
-            //todo listining stream
-
-
+            return responce.IsSuccessefully;
         }
 
         public async Task DeleteLobby(Guid lobbyId)
@@ -231,17 +72,25 @@ namespace DurakClient.Services.LobbyServices
             var actionRequest = GetActionRequest(lobbyId);
             await _lobbyService.DeleteLobbyAsync(actionRequest);
         }
-        public async Task JoinLobby(Guid lobbyId, string? password)
+
+        public async Task<bool> JoinLobby(Guid lobbyId, string? password)
         {
             var actionRequest = GetActionRequest(lobbyId);
 
             var joinRequest = new JoinRequest() { ActionRequest = actionRequest, Password = password };
-            var responceStream = _lobbyService.JoinLobby(joinRequest);
+            try
+            {
+                var responce = _lobbyService.JoinLobby(joinRequest);
 
+                if (responce.IsSuccessefully)
+                    _resources.LobbyId = Guid.Parse(responce.LobbyId);
 
-            //todo listining stream
-
-
+                return responce.IsSuccessefully;
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.PermissionDenied)
+            {
+                return false;
+            }
         }
 
         public async Task LeaveLobby(Guid lobbyId)
@@ -279,7 +128,7 @@ namespace DurakClient.Services.LobbyServices
             return new ActionRequest
             {
                 LobbyId = lobbyId.ToString(),
-                SenderId = _resources.Guid.ToString()
+                SenderId = _resources.PlayerId.ToString()
             };
         }
 

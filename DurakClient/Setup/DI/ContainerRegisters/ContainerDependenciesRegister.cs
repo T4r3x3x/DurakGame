@@ -59,7 +59,7 @@ namespace DurakClient.Setup.DI.ContainerRegisters
                 .As<IGameService>();
             builder.RegisterType<ConnectionService>()
                 .As<IConnectionService>();
-            builder.RegisterType<Resources>();
+            builder.RegisterType<Resources>().SingleInstance();
             return builder;
         }
 

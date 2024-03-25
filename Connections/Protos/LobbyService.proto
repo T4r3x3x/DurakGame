@@ -7,24 +7,33 @@ import "google/protobuf/empty.proto";
 option csharp_namespace = "Connections.Services";
 
 service LobbyService{ 
-	rpc CreateLobby(LobbyCreateRequest) returns (stream LobbyState);
+	rpc CreateLobby(CreateLobbyRequest) returns (CreateLobbyResponce);
 	rpc DeleteLobby(ActionRequest) returns (google.protobuf.Empty);
-	rpc JoinLobby(JoinRequest) returns (stream LobbyState);
+	rpc JoinLobby(JoinRequest) returns (JoinResponce);
 	rpc LeaveLobby(ActionRequest) returns (google.protobuf.Empty);
 	rpc StartGame(ActionRequest) returns (google.protobuf.Empty);
 	rpc PrepareToGame(ActionRequest) returns (google.protobuf.Empty);
 	rpc KickPlayer(KickPlayerRequest) returns (google.protobuf.Empty);
 	rpc GetLobbiesStream(google.protobuf.Empty) returns (stream LobbyListResponce);
+	rpc GetLobbyStateStream(LobbyStateRequest) returns (stream LobbyStateResponce);
 }
 
-message LobbyCreateRequest{
+message CreateLobbyRequest{
 	string name = 1;
 	google.protobuf.StringValue password = 2;
 	string creatorId = 3;
-	LobbySetting settings = 4;
+	LobbySetting gameSettings = 4;
 }
 
-message LobbyState{
+message CreateLobbyResponce{
+	string lobbyId = 1;
+	bool isSuccessefully = 2;
+}
+
+message LobbyStateRequest{
+	string id = 1;
+}
+message LobbyStateResponce{
 	string id = 1;//добавить сеттингс?
 	repeated PlayerModel players = 2;
 }
@@ -37,6 +46,11 @@ message PlayerModel{
 message JoinRequest{
 	ActionRequest actionRequest = 1;
 	google.protobuf.StringValue password = 2;
+}
+
+message JoinResponce{
+	string lobbyId = 1;
+	bool isSuccessefully = 2;
 }
 
 message ActionRequest{

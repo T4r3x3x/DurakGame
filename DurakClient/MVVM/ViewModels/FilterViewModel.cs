@@ -1,6 +1,6 @@
 ﻿using DurakClient.MVVM.Models;
-using DurakClient.Services.LobbyServices;
 using DurakClient.Utilities;
+using DurakClient.Utilities.Ranges;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -12,44 +12,63 @@ namespace DurakClient.MVVM.ViewModels
 {
     public class FilterViewModel : ViewModelBase
     {
-        private readonly ILobbyService _lobbyService;
+        private readonly Filter _filter;
 
-        [Reactive] public string FilterName { get; set; } = DefaultValues.DefaultName;
-        [Reactive] public int MinPlayersCount { get; set; } = DefaultValues.DefaultMinPlayersCount;
-        [Reactive] public int MaxPlayersCount { get; set; } = DefaultValues.DefaultMaxPlayersCount;
-        [Reactive] public int MinStartCardsCount { get; set; } = DefaultValues.DefaultMinStartCardsCount;
-        [Reactive] public int MaxStartCardsCount { get; set; } = DefaultValues.DefaultMaxStartCardsCount;
-        [Reactive] public bool IsAllowCommonDeckType { get; set; } = DefaultValues.DefaultAllowCommonDeckType;
-        [Reactive] public bool IsAllowExtendedDeckType { get; set; } = DefaultValues.DefaultAllowExtendedDeckType;
+        [Reactive] public IntRange PlayersCountRange { get; set; } = DefaultValuesProvider.PlayersCountRange;
+        [Reactive] public IntRange CardsStartCountRange { get; set; } = DefaultValuesProvider.CardsStartCountRange;
+        [Reactive] public string FilterName { get; set; } = DefaultValuesProvider.DefaultFilterName;
+        [Reactive] public bool IsAllowCommonDeckType { get; set; } = DefaultValuesProvider.DefaultAllowCommonDeckType;
+        [Reactive] public bool IsAllowExtendedDeckType { get; set; } = DefaultValuesProvider.DefaultAllowExtendedDeckType;
 
         public ReactiveCommand<Unit, Unit> ResetCommand { get; }
         public IObservable<Filter> Filter { get; }
 
-        public FilterViewModel(ILobbyService lobbyService)
+        public FilterViewModel()
         {
-            _lobbyService = lobbyService;
             ResetCommand = ReactiveCommand.Create(Reset);
+            _filter = new Filter(
+                FilterName,
+                PlayersCountRange.Min,
+                PlayersCountRange.Max,
+                CardsStartCountRange.Min,
+                CardsStartCountRange.Max,
+                IsAllowCommonDeckType,
+                IsAllowExtendedDeckType);
 
             Filter = this.WhenAnyValue(
                      x => x.FilterName,
-                     x => x.MinPlayersCount,
-                     x => x.MaxPlayersCount,
-                     x => x.MinStartCardsCount,
-                     x => x.MaxStartCardsCount,
+                     x => x.PlayersCountRange.Min,
+                     x => x.PlayersCountRange.Max,
+                     x => x.CardsStartCountRange.Min,
+                     x => x.CardsStartCountRange.Max,
                      x => x.IsAllowCommonDeckType,
                      x => x.IsAllowExtendedDeckType,
-                     selector: (a, b, c, d, e, f, g) => new Filter(a, b, c, d, e, f, g));
+                     selector: (a, b, c, d, e, f, g) =>
+                     {
+                         UpdateFilter(a, b, c, d, e, f, g);
+                         return _filter;
+                     });
+        }
+
+        private void UpdateFilter(string name, int minPlayerCount, int maxPlayersCount, int minStartCardsCount,
+            int maxStartCardsCount, bool isAllowedCommonDeckType, bool isAllowedExtenededDeckType)
+        {
+            _filter.FilterName = name;
+            _filter.MinPlayersCount = minPlayerCount;
+            _filter.MaxPlayersCount = maxPlayersCount;
+            _filter.MinStartCardsCount = minStartCardsCount;
+            _filter.MaxStartCardsCount = maxStartCardsCount;
+            _filter.IsAllowCommonDeckType = isAllowedCommonDeckType;
+            _filter.IsAllowExtendedDeckType = isAllowedExtenededDeckType;
         }
 
         private void Reset()
         {
-            FilterName = DefaultValues.DefaultName;
-            MinPlayersCount = DefaultValues.DefaultMinPlayersCount;
-            MaxPlayersCount = DefaultValues.DefaultMaxPlayersCount;
-            MinStartCardsCount = DefaultValues.DefaultMinStartCardsCount;
-            MaxStartCardsCount = DefaultValues.DefaultMaxStartCardsCount;
-            IsAllowCommonDeckType = DefaultValues.DefaultAllowCommonDeckType;
-            IsAllowExtendedDeckType = DefaultValues.DefaultAllowExtendedDeckType;
+            FilterName = DefaultValuesProvider.DefaultFilterName;
+            PlayersCountRange = DefaultValuesProvider.PlayersCountRange;
+            CardsStartCountRange = DefaultValuesProvider.CardsStartCountRange;
+            IsAllowCommonDeckType = DefaultValuesProvider.DefaultAllowCommonDeckType;
+            IsAllowExtendedDeckType = DefaultValuesProvider.DefaultAllowExtendedDeckType;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace DurakClient.Comparers
         public bool Equals(LobbyResponce? x, LobbyResponce? y)
         {
             if (x is null || y is null) return x == y;
-            return x.Id == y.Id;
+            return x.Id == y.Id && x.JoindePlayersCount == y.JoindePlayersCount;
         }
 
         public int GetHashCode([DisallowNull] LobbyResponce obj)
