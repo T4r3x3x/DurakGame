@@ -11,7 +11,7 @@ namespace Server.Utilities
     {
         public ServerMappingProfile()
         {
-            CreateMap<User, PlayerModel>().ReverseMap();
+            CreateMap<User, PlayerResponce>().ReverseMap();
             CreateMap<Lobby, LobbyResponce>()
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Guid))
                 .ForMember(x => x.HasPassword, opt => opt.MapFrom(x => x.Password != null))

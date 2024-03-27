@@ -12,14 +12,11 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="DurakClient">
 
-		<Window.Resources>
-			<convertors:MultipleBindingToTupleConvertor x:Key="myConverter"/>
-		</Window.Resources>
 	<Grid>
 		<rxui:RoutedViewHost Grid.Row="0" Router="{Binding Router}">
 			<rxui:RoutedViewHost.DefaultContent>
 				<Grid>
-					<Grid.RowDefinitions>
+					<Grid.RowDefinitions>	
 						<RowDefinition Height="Auto"></RowDefinition>
 						<RowDefinition Height="Auto"></RowDefinition>
 						<RowDefinition Height="Auto"></RowDefinition>

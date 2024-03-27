@@ -4,6 +4,7 @@ using Connections.Services;
 
 using DurakClient.Comparers;
 using DurakClient.MVVM.Models;
+using DurakClient.Results;
 
 using Google.Protobuf.WellKnownTypes;
 
@@ -28,10 +29,13 @@ namespace DurakClient.Services.LobbyServices
         private readonly Resources _resources;
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private readonly BehaviorSubject<List<LobbyResponce>> _lobbiesResponce = new([]);
+        private readonly BehaviorSubject<LobbyStateResponce> _lobbyStateResponce = new(null!);
 
-        private static readonly EnumerablesEqualityComparer<LobbyResponce, LobbyResponceEqualityComparer> s_comparer = new();
+        private static readonly EnumerablesEqualityComparer<LobbyResponce, LobbyResponceEqualityComparer> s_lobbyResponceComparer = new();
+        private static readonly EnumerablesEqualityComparer<PlayerResponce, PlayerResponceEqualityComparer> s_playerResponceComparer = new();
         private static readonly Empty s_empty = new Empty();
 
+        public IObservable<IEnumerable<Player>> Players { get; }
         public IObservable<IEnumerable<Lobby>> Lobbies { get; }
 
         public LobbyService(LobbyServiceClient clientService, Resources resources, IMapper mapper)
@@ -39,12 +43,16 @@ namespace DurakClient.Services.LobbyServices
             _lobbyService = clientService;
             _resources = resources;
             _mapper = mapper;
-            Lobbies = _lobbiesResponce.DistinctUntilChanged(s_comparer)
+
+            Lobbies = _lobbiesResponce.DistinctUntilChanged(s_lobbyResponceComparer)
                 .Select(x => x
                 .Select(x => _mapper.Map<Lobby>(x)));
+            Players = _lobbyStateResponce.Select(x => x.Players).DistinctUntilChanged(s_playerResponceComparer)
+                .Select(x => x
+                .Select(x => _mapper.Map<Player>(x)));
         }
 
-        public async void StartListiningLobbies()
+        public async Task StartListiningLobbies()
         {
             var token = _cancellationTokenSource.Token;
             var responce = _lobbyService.GetLobbiesStream(s_empty, cancellationToken: token);
@@ -73,7 +81,7 @@ namespace DurakClient.Services.LobbyServices
             await _lobbyService.DeleteLobbyAsync(actionRequest);
         }
 
-        public async Task<bool> JoinLobby(Guid lobbyId, string? password)
+        public async Task<JoinResult> JoinLobby(Guid lobbyId, string? password)
         {
             var actionRequest = GetActionRequest(lobbyId);
 
@@ -85,13 +93,34 @@ namespace DurakClient.Services.LobbyServices
                 if (responce.IsSuccessefully)
                     _resources.LobbyId = Guid.Parse(responce.LobbyId);
 
-                return responce.IsSuccessefully;
+                return JoinResult.Success;
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.PermissionDenied)
             {
-                return false;
+                return JoinResult.WrongPassword;
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
+            {
+                return JoinResult.LobbyNotFound;
+            }
+            catch
+            {
+                return JoinResult.UnkownException;
             }
         }
+
+        public async Task StartListiningLobbyState(Guid lobbyId)
+        {
+            var token = _cancellationTokenSource.Token;
+            var lobbyStateRequest = new LobbyStateRequest() { Id = lobbyId.ToString() };
+            var responceStream = _lobbyService.GetLobbyStateStream(lobbyStateRequest).ResponseStream;
+            while (await responceStream.MoveNext(token))
+            {
+                var message = responceStream.Current;
+                _lobbyStateResponce.OnNext(message);
+            }
+        }
+
 
         public async Task LeaveLobby(Guid lobbyId)
         {

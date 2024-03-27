@@ -35,10 +35,10 @@ message LobbyStateRequest{
 }
 message LobbyStateResponce{
 	string id = 1;//добавить сеттингс?
-	repeated PlayerModel players = 2;
+	repeated PlayerResponce players = 2;
 }
 
-message PlayerModel{
+message PlayerResponce{
 	string nickname = 1;
 	bool areReady = 2;
 }
@@ -65,10 +65,6 @@ message KickPlayerRequest{
 
 message LobbyListResponce{
 	repeated LobbyResponce lobbyList = 1;
-}
-
-message PlayerList{
-	repeated PlayerModel playerList = 1;
 }
 
 message LobbyResponce{

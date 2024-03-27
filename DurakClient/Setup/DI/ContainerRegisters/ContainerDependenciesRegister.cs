@@ -76,6 +76,7 @@ namespace DurakClient.Setup.DI.ContainerRegisters
             builder.RegisterType<FilterViewModel>();
             builder.RegisterType<CreateLobbyViewModel>();
             builder.RegisterType<LobbiesViewModel>();
+            builder.RegisterType<LobbyViewModel>();
             return builder;
         }
 
@@ -89,6 +90,8 @@ namespace DurakClient.Setup.DI.ContainerRegisters
                 .As<IViewModelFactory<LobbiesViewModel>>();
             builder.RegisterType<CreateLobbyViewModelFactory>()
                .As<IViewModelFactory<CreateLobbyViewModel>>();
+            builder.RegisterType<LobbyViewModelFactory>()
+                .As<IViewModelFactory<LobbyViewModel>>();
             return builder;
         }
     }

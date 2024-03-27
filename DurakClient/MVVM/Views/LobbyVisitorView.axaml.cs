@@ -7,9 +7,9 @@ using ReactiveUI;
 
 namespace DurakClient.MVVM.Views
 {
-    public partial class CreateLobbyView : ReactiveUserControl<CreateLobbyViewModel>
+    public partial class LobbyVisitorView : ReactiveUserControl<LobbyViewModel>
     {
-        public CreateLobbyView()
+        public LobbyVisitorView()
         {
             this.WhenActivated(disposables => { });
             AvaloniaXamlLoader.Load(this);

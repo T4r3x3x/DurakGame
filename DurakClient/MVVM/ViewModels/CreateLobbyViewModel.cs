@@ -1,4 +1,5 @@
-﻿using DurakClient.MVVM.Models;
+﻿using DurakClient.Factories.ViewModelFactories;
+using DurakClient.MVVM.Models;
 using DurakClient.Services;
 using DurakClient.Services.LobbyServices;
 using DurakClient.Utilities;
@@ -9,15 +10,18 @@ using GameEngine.Entities.SystemEntites;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using Splat;
+
 using System;
 using System.Reactive;
 
 namespace DurakClient.MVVM.ViewModels
 {
-    public class CreateLobbyViewModel : ViewModelBase
+    public class CreateLobbyViewModel : ViewModelBase, IRoutableViewModel
     {
         private readonly ILobbyService _lobbyService;
         private readonly Resources _resources;
+        private readonly IViewModelFactory<LobbyViewModel> _lobbyViewModelFactory;
 
         [Reactive] public string Name { get; set; } = DefaultValuesProvider.DefaultLobbyName;
         [Reactive] public string Password { get; set; } = DefaultValuesProvider.DefaultPassword;
@@ -26,20 +30,26 @@ namespace DurakClient.MVVM.ViewModels
         [Reactive] public DeckType DeckType { get; set; } = DefaultValuesProvider.DefaultDeckTypeValue;
         public IntRange PlayersCountRange { get; set; } = DefaultValuesProvider.PlayersCountRange;
         public IntRange CardsStartCountRange { get; set; } = DefaultValuesProvider.CardsStartCountRange;
+        public string? UrlPathSegment => "asfd";
+        public IScreen HostScreen { get; }
 
         public ReactiveCommand<Unit, Unit> ResetCommand { get; set; }
         public ReactiveCommand<Unit, Unit> CreateLobbyCommand { get; set; }
 
-        public CreateLobbyViewModel(ILobbyService lobbyService, Resources resources)
+        public CreateLobbyViewModel(ILobbyService lobbyService, Resources resources, IScreen hostScreen, IViewModelFactory<LobbyViewModel> lobbyViewModelFactory = null!)
         {
+            HostScreen = hostScreen;
             _lobbyService = lobbyService;
             _resources = resources;
+            HostScreen = hostScreen;
+            _lobbyViewModelFactory = lobbyViewModelFactory ?? Locator.Current.GetService<IViewModelFactory<LobbyViewModel>>()!;
 
             ResetCommand = ReactiveCommand.Create(Reset);
             CreateLobbyCommand = ReactiveCommand.Create(CreateLobby, IsLobbyNameValid);
         }
         private IObservable<bool> IsLobbyNameValid => this.WhenAnyValue(x => x.Name,
                                                                x => !string.IsNullOrWhiteSpace(x) && x.Length > 5);
+
         private void Reset()
         {
             Name = DefaultValuesProvider.DefaultLobbyName;
@@ -63,6 +73,8 @@ namespace DurakClient.MVVM.ViewModels
                 Password = Password,
             };
             _lobbyService.CreateLobby(lobbyCreateModel);
+
+            HostScreen.Router.Navigate.Execute(_lobbyViewModelFactory.GetViewModel(HostScreen));
         }
     }
 }

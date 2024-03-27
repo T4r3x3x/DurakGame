@@ -17,6 +17,6 @@ namespace DurakClient.Factories.ViewModelFactories.Implementations
             _resources = resources;
         }
 
-        public CreateLobbyViewModel GetViewModel(IScreen hotScreen) => new CreateLobbyViewModel(_lobbyService, _resources);
+        public CreateLobbyViewModel GetViewModel(IScreen hostScreen) => new CreateLobbyViewModel(_lobbyService, _resources, hostScreen);
     }
 }

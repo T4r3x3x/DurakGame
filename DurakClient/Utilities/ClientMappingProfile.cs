@@ -14,6 +14,7 @@ namespace DurakClient.Utilities
         {
             CreateMap<LobbyResponce, Lobby>()
                 .ForMember(x => x.Guid, opt => opt.MapFrom(x => x.Id));
+            CreateMap<PlayerResponce, MVVM.Models.Player>();
             CreateMap<Card, CardMessage>().ReverseMap();
             CreateMap<CreateLobbyModel, CreateLobbyRequest>().ReverseMap();
         }

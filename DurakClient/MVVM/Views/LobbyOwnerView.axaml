@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="DurakClient.MVVM.Views.LobbyOwnerView"
+			 xmlns:vm="using:DurakClient.MVVM.ViewModels.LobbyViewModel">
+
+	<DockPanel>
+		<ListBox ItemsSource="{Binding Players}">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Canvas>
+						<TextBox Text="{Binding Nickname}"/>
+						<CheckBox IsHitTestVisible="False" IsChecked="{Binding AreReady}"/>
+						<Button Command="{Binding KickPlayerCommand}">Kick</Button>
+					</Canvas>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+		<Button Command="{Binding StartGameCommand}">Start game</Button>
+		<Button Command="{Binding DeleteLobbyCommand}">Delete lobby</Button>
+	</DockPanel>
+</UserControl>

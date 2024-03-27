@@ -1,4 +1,5 @@
 ﻿using DurakClient.MVVM.Models;
+using DurakClient.Results;
 
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,13 @@ namespace DurakClient.Services.LobbyServices
     public interface ILobbyService
     {
         public IObservable<IEnumerable<Lobby>> Lobbies { get; }
-        public void StartListiningLobbies();
+        public IObservable<IEnumerable<Player>> Players { get; }
+        public Task StartListiningLobbies();
+        public Task StartListiningLobbyState(Guid lobbyId);
         public void StopListiningLobbies();
         public Task<bool> CreateLobby(CreateLobbyModel createModel);
         public Task DeleteLobby(Guid lobbyId);
-        public Task<bool> JoinLobby(Guid lobbyId, string? password);
+        public Task<JoinResult> JoinLobby(Guid lobbyId, string? password);
         public Task LeaveLobby(Guid lobbyId);
         public Task StartGame(Guid lobbyId);
         public Task PrepareToGame(Guid lobbyId);

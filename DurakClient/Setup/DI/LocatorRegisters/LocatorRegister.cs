@@ -15,6 +15,7 @@ namespace DurakClient.Setup.DI.LocatorRegisters
             Locator.CurrentMutable.RegisterLazySingleton(container.Resolve<IViewModelFactory<LobbiesViewModel>>);
             Locator.CurrentMutable.RegisterLazySingleton(container.Resolve<IViewModelFactory<FilterViewModel>>);
             Locator.CurrentMutable.RegisterLazySingleton(container.Resolve<IViewModelFactory<CreateLobbyViewModel>>);
+            Locator.CurrentMutable.RegisterLazySingleton(container.Resolve<IViewModelFactory<LobbyViewModel>>);
         }
     }
 }

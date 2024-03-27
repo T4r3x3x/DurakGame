@@ -35,6 +35,9 @@
 	  <Compile Update="MVVM\Views\LobbiesView.axaml.cs">
 	    <DependentUpon>LobbiesView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="MVVM\Views\LobbyOwnerView.axaml.cs">
+	    <DependentUpon>LobbyOwnerView.axaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
  
 </Project>
