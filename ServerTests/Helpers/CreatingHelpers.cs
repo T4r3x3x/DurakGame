@@ -18,7 +18,15 @@ namespace ServerTests.Helpers
         internal static Lobby AddNewLobby(User user, ConnectionResources resources, GameSettings settings, string name = "", string password = "")
         {
             Guid guid = Guid.NewGuid();
-            Lobby lobby = new Lobby() { Guid = guid, Name = name, Owner = user, Password = password, Players = new(), Settings = settings };
+            Lobby lobby = new Lobby()
+            {
+                Guid = guid,
+                Name = name,
+                Owner = user,
+                Password = password,
+                Players = new(settings.PlayersCount),
+                Settings = settings
+            };
             resources.Lobbies.TryAdd(guid, lobby);
             return lobby;
         }

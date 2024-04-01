@@ -29,7 +29,7 @@ namespace DurakClient.MVVM.ViewModels
 
         public FilterViewModel FilterViewModel { get; }
         public IObservable<IEnumerable<Lobby>> Lobbies { get; }
-        public string UrlPathSegment { get; } = "Lobbies list";
+        public string UrlPathSegment { get; } = "Lobbies";
         public IScreen HostScreen { get; }
 
         public ReactiveCommand<(Guid, string?), Unit> JoinLobbyCommand { get; set; }
@@ -55,6 +55,7 @@ namespace DurakClient.MVVM.ViewModels
 
         private void CreateLobby()
         {
+            _lobbyService.StopListining();
             var viewModel = _createLobbyViewModelFactory.GetViewModel(HostScreen);
             HostScreen.Router.Navigate.Execute(viewModel);
         }
@@ -64,6 +65,7 @@ namespace DurakClient.MVVM.ViewModels
             var joinResult = await _lobbyService.JoinLobby(param.lobbyId, param.password);
             if (joinResult == JoinResult.Success)
             {
+                _lobbyService.StopListining();
                 var viewModel = _lobbyViewModelFactory.GetViewModel(HostScreen);
                 await HostScreen.Router.Navigate.Execute(viewModel);
             }

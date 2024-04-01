@@ -15,6 +15,8 @@
 
 	<DockPanel LastChildFill="True" VerticalAlignment="Top" HorizontalAlignment="Center">
 		<TextBlock DockPanel.Dock="Top" TextAlignment="Center" Text="Create lobby"/>
+		<Button DockPanel.Dock="Bottom" Margin="10" Command="{Binding GoBackCommand}"
+				HorizontalAlignment="Center">Go back</Button>
 		<Button DockPanel.Dock="Bottom" Margin="10" Command="{Binding CreateLobbyCommand}"
 				HorizontalAlignment="Center">Create</Button>
 		<Button DockPanel.Dock="Bottom" Margin="10" Command="{Binding ResetCommand}"

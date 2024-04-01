@@ -18,29 +18,24 @@ namespace DurakClient.Setup.DI.ContainerRegisters
 {
     internal static class ContainerDependenciesRegister
     {
-        internal static ContainerBuilder RegisterDependecies(this ContainerBuilder builder)
-        {
+        internal static ContainerBuilder RegisterDependecies(this ContainerBuilder builder) =>
             builder.RegisterChannelProvider()
                 .RegisterGrpcSevices()
                 .RegisterAutoMapper()
                 .RegisterClientServices()
                 .RegisterViewModels()
                 .RegisterViewModelsFactories();
-            return builder;
-        }
 
-        internal static ContainerBuilder RegisterGrpcSevices(this ContainerBuilder builder)
-        {
-            builder.RegisterGrpcService<Connections.Services.LobbyService.LobbyServiceClient>();
-            builder.RegisterGrpcService<Connections.Services.GameService.GameServiceClient>();
-            builder.RegisterGrpcService<Connections.Services.ConnectionService.ConnectionServiceClient>();
-            return builder;
-        }
+        internal static ContainerBuilder RegisterGrpcSevices(this ContainerBuilder builder) =>
+            builder.RegisterGrpcService<Connections.Services.LobbyService.LobbyServiceClient>()
+                  .RegisterGrpcService<Connections.Services.GameService.GameServiceClient>()
+                  .RegisterGrpcService<Connections.Services.ConnectionService.ConnectionServiceClient>();
 
-        internal static void RegisterGrpcService<T>(this ContainerBuilder builder)
+        internal static ContainerBuilder RegisterGrpcService<T>(this ContainerBuilder builder)
         {
             builder.Register((IChannelProvider channelProvider) =>
-                (T)Activator.CreateInstance(typeof(T), channelProvider.GetInvoker())!);
+                  (T)Activator.CreateInstance(typeof(T), channelProvider.GetInvoker())!);
+            return builder;
         }
 
         internal static ContainerBuilder RegisterAutoMapper(this ContainerBuilder builder)
@@ -54,7 +49,7 @@ namespace DurakClient.Setup.DI.ContainerRegisters
         internal static ContainerBuilder RegisterClientServices(this ContainerBuilder builder)
         {
             builder.RegisterType<LobbyService>()
-                .As<ILobbyService>().SingleInstance();
+                .As<ILobbyService>();
             builder.RegisterType<GameService>()
                 .As<IGameService>();
             builder.RegisterType<ConnectionService>()
@@ -79,6 +74,11 @@ namespace DurakClient.Setup.DI.ContainerRegisters
             builder.RegisterType<LobbyViewModel>();
             return builder;
         }
+
+        //internal static ContainerBuilder RegisterType<T>(this ContainerBuilder builder)
+        //{
+        //    return builder.RegisterType<T>();
+        //}
 
         internal static ContainerBuilder RegisterViewModelsFactories(this ContainerBuilder builder)
         {

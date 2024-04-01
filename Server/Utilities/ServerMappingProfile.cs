@@ -15,7 +15,7 @@ namespace Server.Utilities
             CreateMap<Lobby, LobbyResponce>()
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Guid))
                 .ForMember(x => x.HasPassword, opt => opt.MapFrom(x => x.Password != null))
-                .ForMember(x => x.JoindePlayersCount, opt => opt.MapFrom(x => x.Players.Count));
+                .ForMember(x => x.JoinedPlayersCount, opt => opt.MapFrom(x => x.Players.Count));
         }
     }
 }

@@ -37,7 +37,7 @@
 							</Button.CommandParameter>
 						</Button>
 						<TextBox DockPanel.Dock="Bottom" Name="PasswordBox" IsVisible="{Binding HasPassword}" Watermark="Password" PasswordChar="*"/>
-						<TextBlock DockPanel.Dock="Bottom" Name="LobbyId" IsVisible="True" Text="{Binding Guid}"/>
+						<TextBlock DockPanel.Dock="Bottom" Name="LobbyId" IsVisible="False" Text="{Binding Guid}"/>
 						<TextBlock DockPanel.Dock="Bottom" Text="{Binding Settings.PlayersStartCardsCount, StringFormat='Start count of cards: {0}'}"/>
 						<TextBlock DockPanel.Dock="Bottom" IsVisible="{Binding HasPassword}">Has password</TextBlock>
 						<TextBlock DockPanel.Dock="Bottom" Text="{Binding Settings.DeckType, StringFormat='Deck type: {0}'}"/>

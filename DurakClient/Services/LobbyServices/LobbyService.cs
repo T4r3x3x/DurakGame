@@ -29,7 +29,7 @@ namespace DurakClient.Services.LobbyServices
         private readonly Resources _resources;
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private readonly BehaviorSubject<List<LobbyResponce>> _lobbiesResponce = new([]);
-        private readonly BehaviorSubject<LobbyStateResponce> _lobbyStateResponce = new(null!);
+        private readonly BehaviorSubject<LobbyStateResponce> _lobbyStateResponce = new(new());
 
         private static readonly EnumerablesEqualityComparer<LobbyResponce, LobbyResponceEqualityComparer> s_lobbyResponceComparer = new();
         private static readonly EnumerablesEqualityComparer<PlayerResponce, PlayerResponceEqualityComparer> s_playerResponceComparer = new();
@@ -47,7 +47,7 @@ namespace DurakClient.Services.LobbyServices
             Lobbies = _lobbiesResponce.DistinctUntilChanged(s_lobbyResponceComparer)
                 .Select(x => x
                 .Select(x => _mapper.Map<Lobby>(x)));
-            Players = _lobbyStateResponce.Select(x => x.Players).DistinctUntilChanged(s_playerResponceComparer)
+            Players = _lobbyStateResponce.Select(x => x?.Players).DistinctUntilChanged(s_playerResponceComparer)
                 .Select(x => x
                 .Select(x => _mapper.Map<Player>(x)));
         }
@@ -75,9 +75,9 @@ namespace DurakClient.Services.LobbyServices
             return responce.IsSuccessefully;
         }
 
-        public async Task DeleteLobby(Guid lobbyId)
+        public async Task DeleteLobby()
         {
-            var actionRequest = GetActionRequest(lobbyId);
+            var actionRequest = GetActionRequest(_resources.LobbyId);
             await _lobbyService.DeleteLobbyAsync(actionRequest);
         }
 
@@ -109,11 +109,11 @@ namespace DurakClient.Services.LobbyServices
             }
         }
 
-        public async Task StartListiningLobbyState(Guid lobbyId)
+        public async Task StartListiningLobbyState()
         {
             var token = _cancellationTokenSource.Token;
-            var lobbyStateRequest = new LobbyStateRequest() { Id = lobbyId.ToString() };
-            var responceStream = _lobbyService.GetLobbyStateStream(lobbyStateRequest).ResponseStream;
+            var lobbyStateRequest = new LobbyStateRequest() { Id = _resources.LobbyId.ToString() };
+            var responceStream = _lobbyService.GetLobbyStateStream(lobbyStateRequest, cancellationToken: token).ResponseStream;
             while (await responceStream.MoveNext(token))
             {
                 var message = responceStream.Current;
@@ -121,28 +121,27 @@ namespace DurakClient.Services.LobbyServices
             }
         }
 
-
-        public async Task LeaveLobby(Guid lobbyId)
+        public async Task LeaveLobby()
         {
-            var actionRequest = GetActionRequest(lobbyId);
+            var actionRequest = GetActionRequest(_resources.LobbyId);
             await _lobbyService.LeaveLobbyAsync(actionRequest);
         }
 
-        public async Task StartGame(Guid lobbyId)
+        public async Task StartGame()
         {
-            var actionRequest = GetActionRequest(lobbyId);
+            var actionRequest = GetActionRequest(_resources.LobbyId);
             await _lobbyService.StartGameAsync(actionRequest);
         }
 
-        public async Task PrepareToGame(Guid lobbyId)
+        public async Task PrepareToGame()
         {
-            var actionRequest = GetActionRequest(lobbyId);
+            var actionRequest = GetActionRequest(_resources.LobbyId);
             await _lobbyService.PrepareToGameAsync(actionRequest);
         }
 
-        public async Task KickPlayer(Guid lobbyId, Guid KickingPlayerId)
+        public async Task KickPlayer(Guid KickingPlayerId)
         {
-            ActionRequest actionRequest = GetActionRequest(lobbyId);
+            ActionRequest actionRequest = GetActionRequest(_resources.LobbyId);
             var request = new KickPlayerRequest()
             {
                 ActionRequest = actionRequest,
@@ -161,9 +160,10 @@ namespace DurakClient.Services.LobbyServices
             };
         }
 
-        public void StopListiningLobbies()
+        public void StopListining()
         {
             _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.TryReset();
         }
     }
 }

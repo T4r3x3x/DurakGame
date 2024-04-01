@@ -12,14 +12,14 @@ namespace DurakClient.Services.LobbyServices
         public IObservable<IEnumerable<Lobby>> Lobbies { get; }
         public IObservable<IEnumerable<Player>> Players { get; }
         public Task StartListiningLobbies();
-        public Task StartListiningLobbyState(Guid lobbyId);
-        public void StopListiningLobbies();
+        public Task StartListiningLobbyState();
+        public void StopListining();
         public Task<bool> CreateLobby(CreateLobbyModel createModel);
-        public Task DeleteLobby(Guid lobbyId);
+        public Task DeleteLobby();
         public Task<JoinResult> JoinLobby(Guid lobbyId, string? password);
-        public Task LeaveLobby(Guid lobbyId);
-        public Task StartGame(Guid lobbyId);
-        public Task PrepareToGame(Guid lobbyId);
-        public Task KickPlayer(Guid lobbyId, Guid KickingPlayerId);
+        public Task LeaveLobby();
+        public Task StartGame();
+        public Task PrepareToGame();
+        public Task KickPlayer(Guid KickingPlayerId);
     }
 }

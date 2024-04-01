@@ -8,7 +8,7 @@ namespace DurakClient.Utilities
     {
         public readonly static string DefaultFilterName = string.Empty;
         public readonly static string DefaultLobbyName = string.Empty;
-        public readonly static string DefaultPassword = string.Empty;
+        public readonly static string? DefaultPassword = null;
         public const bool DefaultAllowCommonDeckType = true;
         public const bool DefaultAllowExtendedDeckType = true;
         public const DeckType DefaultDeckTypeValue = DeckType.Common;

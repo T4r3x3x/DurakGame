@@ -275,7 +275,7 @@ namespace ServerTests.LobbyServiceTests
             var kickingUser = CreatingHelpers.AddNewUser(_nickName, _resources);
 
             var lobby = CreatingHelpers.AddNewLobby(lobbyOwner, _resources, _gameSettings);
-            lobby.Players.Add(kickingUser);
+            lobby.Players.TryAdd(kickingUser);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = kicker.Guid.ToString() };
             KickPlayerRequest kickPlayerRequest = new() { KickingPlayerId = kickingUser.Guid.ToString(), ActionRequest = actionRequest };
@@ -305,7 +305,7 @@ namespace ServerTests.LobbyServiceTests
             var kickingUser = CreatingHelpers.AddNewUser(_nickName, _resources);
 
             var lobby = CreatingHelpers.AddNewLobby(lobbyOwner, _resources, _gameSettings);
-            lobby.Players.Add(kickingUser);
+            lobby.Players.TryAdd(kickingUser);
 
             var wrongGuid = Guid.NewGuid();
 
@@ -336,7 +336,7 @@ namespace ServerTests.LobbyServiceTests
             var kickingUser = CreatingHelpers.AddNewUser(_nickName, _resources);
 
             var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
-            lobby.Players.Add(kickingUser);
+            lobby.Players.TryAdd(kickingUser);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             KickPlayerRequest kickPlayerRequest = new() { KickingPlayerId = kickingUser.Guid.ToString(), ActionRequest = actionRequest };
@@ -384,7 +384,7 @@ namespace ServerTests.LobbyServiceTests
             #region Arrange            
             var user = CreatingHelpers.AddNewUser(_nickName, _resources);
             var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
-            lobby.Players.Add(user);
+            lobby.Players.TryAdd(user);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             #endregion
@@ -404,7 +404,7 @@ namespace ServerTests.LobbyServiceTests
             #region Arrange            
             var user = CreatingHelpers.AddNewUser(_nickName, _resources);
             var lobby = CreatingHelpers.AddNewLobby(user, _resources, _gameSettings);
-            lobby.Players.Add(user);
+            lobby.Players.TryAdd(user);
 
             ActionRequest actionRequest = new() { LobbyId = lobby.Guid.ToString(), SenderId = user.Guid.ToString() };
             _lobbyService.PrepareToGame(actionRequest, _mockContext);

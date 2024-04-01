@@ -30,11 +30,12 @@ namespace DurakClient.MVVM.ViewModels
         [Reactive] public DeckType DeckType { get; set; } = DefaultValuesProvider.DefaultDeckTypeValue;
         public IntRange PlayersCountRange { get; set; } = DefaultValuesProvider.PlayersCountRange;
         public IntRange CardsStartCountRange { get; set; } = DefaultValuesProvider.CardsStartCountRange;
-        public string? UrlPathSegment => "asfd";
+        public string? UrlPathSegment => "Create lobby";
         public IScreen HostScreen { get; }
 
         public ReactiveCommand<Unit, Unit> ResetCommand { get; set; }
         public ReactiveCommand<Unit, Unit> CreateLobbyCommand { get; set; }
+        public ReactiveCommand<Unit, Unit> GoBackCommand { get; set; }
 
         public CreateLobbyViewModel(ILobbyService lobbyService, Resources resources, IScreen hostScreen, IViewModelFactory<LobbyViewModel> lobbyViewModelFactory = null!)
         {
@@ -46,9 +47,15 @@ namespace DurakClient.MVVM.ViewModels
 
             ResetCommand = ReactiveCommand.Create(Reset);
             CreateLobbyCommand = ReactiveCommand.Create(CreateLobby, IsLobbyNameValid);
+            GoBackCommand = ReactiveCommand.Create(GoBack);
         }
         private IObservable<bool> IsLobbyNameValid => this.WhenAnyValue(x => x.Name,
                                                                x => !string.IsNullOrWhiteSpace(x) && x.Length > 5);
+
+        private void GoBack()
+        {
+            HostScreen.Router.NavigateBack.Execute();
+        }
 
         private void Reset()
         {
@@ -58,7 +65,7 @@ namespace DurakClient.MVVM.ViewModels
             DeckType = DefaultValuesProvider.DefaultDeckTypeValue;
         }
 
-        private void CreateLobby()
+        private async void CreateLobby()
         {
             CreateLobbyModel lobbyCreateModel = new CreateLobbyModel()
             {
@@ -72,7 +79,7 @@ namespace DurakClient.MVVM.ViewModels
                 Name = Name,
                 Password = Password,
             };
-            _lobbyService.CreateLobby(lobbyCreateModel);
+            await _lobbyService.CreateLobby(lobbyCreateModel);
 
             HostScreen.Router.Navigate.Execute(_lobbyViewModelFactory.GetViewModel(HostScreen));
         }

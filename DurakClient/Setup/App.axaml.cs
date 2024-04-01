@@ -33,9 +33,10 @@ public partial class App : Application
             //  desktop.Exit += OnExit;
         }
 
-        var builder = new ContainerBuilder();
-        builder.RegisterDependecies();
-        var container = builder.Build();
+        var container = new ContainerBuilder()
+            .RegisterDependecies()
+            .Build();
+
         LocatorRegister.RegisterViewModelFactories(container);
         Locator.CurrentMutable.RegisterLazySingleton(() => new CustomViewLocator(), typeof(IViewLocator));
 

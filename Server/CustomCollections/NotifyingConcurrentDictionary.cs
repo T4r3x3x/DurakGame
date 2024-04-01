@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
 
-namespace Server.Entities
+namespace Server.CustomCollections
 {
     public class NotifyingConcurrentDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>> where TKey : notnull
     {
-        private readonly ConcurrentDictionary<TKey, TValue> _dictionary = new();
+        protected readonly ConcurrentDictionary<TKey, TValue> _dictionary = new();
 
         public NotifyingConcurrentDictionary() { }
 
@@ -14,12 +14,12 @@ namespace Server.Entities
             _dictionary = dictionary;
         }
 
-        public event Action<IEnumerable<KeyValuePair<TKey, TValue>>>? OnDataChanged;
+        public event Action<IEnumerable<KeyValuePair<TKey, TValue>>>? DataChanged;
 
-        public bool TryAdd(TKey key, TValue value)
+        public virtual bool TryAdd(TKey key, TValue value)
         {
             var result = _dictionary.TryAdd(key, value);
-            OnDataChanged?.Invoke(_dictionary.AsEnumerable());
+            DataChanged?.Invoke(_dictionary.AsEnumerable());
             return result;
         }
 
@@ -29,10 +29,10 @@ namespace Server.Entities
             return result;
         }
 
-        public bool Remove(TKey key, out TValue value)
+        public virtual bool Remove(TKey key, out TValue value)
         {
             var result = _dictionary.Remove(key, out value!);
-            OnDataChanged?.Invoke(_dictionary.AsEnumerable());
+            DataChanged?.Invoke(_dictionary.AsEnumerable());
             return result;
         }
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -45,6 +45,11 @@ namespace Server.Entities
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)_dictionary).GetEnumerator();
+        }
+
+        protected void OnDataChanged()
+        {
+            DataChanged?.Invoke(this);
         }
     }
 }

@@ -33,9 +33,8 @@ message CreateLobbyResponce{
 message LobbyStateRequest{
 	string id = 1;
 }
-message LobbyStateResponce{
-	string id = 1;//добавить сеттингс?
-	repeated PlayerResponce players = 2;
+message LobbyStateResponce{	
+	repeated PlayerResponce players = 1; //добавить сеттингс?
 }
 
 message PlayerResponce{
@@ -72,7 +71,7 @@ message LobbyResponce{
 	string name = 2;
 	LobbySetting settings = 3;
 	bool hasPassword = 4;
-	int32 joindePlayersCount = 5;
+	int32 joinedPlayersCount = 5;
 }
 
 message LobbySetting{
