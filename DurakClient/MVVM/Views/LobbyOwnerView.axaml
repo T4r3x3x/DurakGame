@@ -6,18 +6,20 @@
              x:Class="DurakClient.MVVM.Views.LobbyOwnerView"
 			 xmlns:vm="using:DurakClient.MVVM.ViewModels.LobbyViewModel">
 
-	<DockPanel LastChildFill="True">
-		<ListBox DockPanel.Dock="Top" ItemsSource="{Binding Players^}">
-			<ListBox.ItemTemplate>
-				<DataTemplate>
-					<DockPanel>
-						<TextBlock DockPanel.Dock="Top" Text="{Binding Nickname}"/>
-						<CheckBox DockPanel.Dock="Top" IsHitTestVisible="False" IsChecked="{Binding AreReady}"/>
-						<Button DockPanel.Dock="Top" Command="{Binding KickPlayerCommand}">Kick</Button>
-					</DockPanel>
-				</DataTemplate>
-			</ListBox.ItemTemplate>
-		</ListBox>
+	<DockPanel Margin="10" LastChildFill="True">
+		<ScrollViewer DockPanel.Dock="Top" >
+			<ItemsControl ItemsSource="{Binding Players^}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<DockPanel>
+							<TextBlock DockPanel.Dock="Top" Text="{Binding Nickname}"/>
+							<CheckBox DockPanel.Dock="Top" IsHitTestVisible="False" IsChecked="{Binding AreReady}"/>
+							<Button DockPanel.Dock="Top" Command="{Binding KickPlayerCommand}">Kick</Button>
+						</DockPanel>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
 		<Button DockPanel.Dock="Left"  Command="{Binding StartGameCommand}">Start game</Button>
 		<Button DockPanel.Dock="Bottom"  Command="{Binding DeleteLobbyCommand}">Delete lobby</Button>
 	</DockPanel>

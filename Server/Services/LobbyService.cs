@@ -10,6 +10,7 @@ using Google.Protobuf.WellKnownTypes;
 
 using Grpc.Core;
 
+using Server.CustomCollections;
 using Server.Entities;
 
 namespace Server.Services

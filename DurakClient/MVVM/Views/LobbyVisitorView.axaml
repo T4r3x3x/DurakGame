@@ -6,16 +6,18 @@
              x:Class="DurakClient.MVVM.Views.LobbyVisitorView"
 			 xmlns:vm="using:DurakClient.MVVM.ViewModels.LobbyViewModel">
 	<DockPanel>
-		<ListBox DockPanel.Dock="Top" ItemsSource="{Binding Players^}">
-			<ListBox.ItemTemplate>
-				<DataTemplate>
-					<DockPanel>
-						<TextBlock DockPanel.Dock="Top" Text="{Binding Nickname}"/>
-						<CheckBox DockPanel.Dock="Top" IsHitTestVisible="False" IsChecked="{Binding AreReady}"/>
-					</DockPanel>
-				</DataTemplate>
-			</ListBox.ItemTemplate>
-		</ListBox>
+		<ScrollViewer Margin="10">
+			<ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Players^}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<DockPanel>
+							<TextBlock DockPanel.Dock="Top" Text="{Binding Nickname}"/>
+							<CheckBox DockPanel.Dock="Top" IsHitTestVisible="False" IsChecked="{Binding AreReady}"/>
+						</DockPanel>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
 		<Button DockPanel.Dock="Left"  Command="{Binding GetReadyCommand}">Get ready</Button>
 		<Button DockPanel.Dock="Bottom" Command="{Binding LeaveLobbyCommand}">Leave lobby</Button>
 	</DockPanel>
