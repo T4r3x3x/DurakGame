@@ -5,6 +5,7 @@
         Success,
         LobbyNotFound,
         WrongPassword,
+        LobbyIsFull,
         UnkownException,
     }
 }

@@ -1,8 +1,11 @@
-﻿namespace DurakClient.MVVM.Models
+﻿using System;
+
+namespace DurakClient.MVVM.Models
 {
     public class Player
     {
-        public required string Nickname { get; set; }
+        public required Guid Guid { get; init; }
+        public required string Nickname { get; init; }
         public bool AreReady { get; set; }
     }
 }

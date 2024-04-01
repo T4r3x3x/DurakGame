@@ -92,6 +92,14 @@ namespace DurakClient.MVVM.ViewModels
                         break;
                     }
 
+                case JoinResult.LobbyIsFull:
+                    {
+                        var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", "Lobby is already full =(",
+                         MsBox.Avalonia.Enums.ButtonEnum.Ok);
+                        await messageBox.ShowAsync();
+                        break;
+                    }
+
                 case JoinResult.UnkownException:
                     {
                         var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", "Unknown error =(",

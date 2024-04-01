@@ -18,7 +18,8 @@
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 		</ScrollViewer>
-		<Button DockPanel.Dock="Left"  Command="{Binding GetReadyCommand}">Get ready</Button>
+		<ToggleButton DockPanel.Dock="Left" IsChecked="{Binding ReadyStatus}">Ready</ToggleButton>
+		<Button DockPanel.Dock="Left"  Command="{Binding GetReadyCommand}">Ready</Button>
 		<Button DockPanel.Dock="Bottom" Command="{Binding LeaveLobbyCommand}">Leave lobby</Button>
 	</DockPanel>
 </UserControl>

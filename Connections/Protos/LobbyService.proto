@@ -12,7 +12,7 @@ service LobbyService{
 	rpc JoinLobby(JoinRequest) returns (JoinResponce);
 	rpc LeaveLobby(ActionRequest) returns (google.protobuf.Empty);
 	rpc StartGame(ActionRequest) returns (google.protobuf.Empty);
-	rpc PrepareToGame(ActionRequest) returns (google.protobuf.Empty);
+	rpc SetReadyStatus(ReadyStatusRequest) returns (google.protobuf.Empty);
 	rpc KickPlayer(KickPlayerRequest) returns (google.protobuf.Empty);
 	rpc GetLobbiesStream(google.protobuf.Empty) returns (stream LobbyListResponce);
 	rpc GetLobbyStateStream(LobbyStateRequest) returns (stream LobbyStateResponce);
@@ -50,6 +50,11 @@ message JoinRequest{
 message JoinResponce{
 	string lobbyId = 1;
 	bool isSuccessefully = 2;
+}
+
+message ReadyStatusRequest{
+	bool status = 1;
+	ActionRequest actionRequest = 2;
 }
 
 message ActionRequest{

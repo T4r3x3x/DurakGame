@@ -41,7 +41,7 @@ namespace Server.Services
             GameSettings settings = _mapper.Map<GameSettings>(request.GameSettings);
 
             var creator = _resources.GetUser(request.CreatorId);
-            creator.AreReady = true;
+            creator.ReadyStatus = true;
 
             Lobby lobby = new Lobby()
             {
@@ -98,7 +98,7 @@ namespace Server.Services
 
             var addingResult = lobby!.Players.TryAdd(player!);
             if (!addingResult)
-                throw new RpcException(new(StatusCode.OutOfRange, "Lobby is already full!"));
+                throw new RpcException(new(StatusCode.ResourceExhausted, "Lobby is already full!"));
 
 
             _logger.LogInformation($"Player {playerId} has been joined to lobby {lobbyId}!");
@@ -139,11 +139,11 @@ namespace Server.Services
             return Task.FromResult(s_empty);
         }
 
-        public override Task<Empty> PrepareToGame(ActionRequest request, ServerCallContext context)
+        public override Task<Empty> SetReadyStatus(ReadyStatusRequest request, ServerCallContext context)
         {
-            var lobby = _resources.GetLobby(request.LobbyId);
-            var player = _resources.GetUser(request.SenderId);
-            lobby.Players.Where(x => x == player).Single().AreReady = true;
+            var lobby = _resources.GetLobby(request.ActionRequest.LobbyId);
+            var player = _resources.GetUser(request.ActionRequest.SenderId);
+            lobby.Players.Where(x => x == player).Single().ReadyStatus = request.Status;
 
             _logger.LogInformation($"Player {player.Guid} prepared to game in lobby {lobby.Guid}!");
 
@@ -153,7 +153,7 @@ namespace Server.Services
         public override Task<Empty> StartGame(ActionRequest request, ServerCallContext context)
         {
             var lobby = _resources.GetLobby(request.LobbyId);
-            var AreEverybodyIsReady = lobby.Players.Where(x => x.AreReady).Count() == lobby.Players.Count();
+            var AreEverybodyIsReady = lobby.Players.Where(x => x.ReadyStatus).Count() == lobby.Players.Count();
 
             if (!AreEverybodyIsReady)
                 return Task.FromResult(new Empty());
@@ -175,7 +175,7 @@ namespace Server.Services
                 new PlayerResponce()
                 {
                     Nickname = x.NickName,
-                    AreReady = x.AreReady
+                    AreReady = x.ReadyStatus
                 }));
             while (!context.CancellationToken.IsCancellationRequested)
             {
@@ -192,7 +192,7 @@ namespace Server.Services
                 new PlayerResponce()
                 {
                     Nickname = x.NickName,
-                    AreReady = x.AreReady
+                    AreReady = x.ReadyStatus
                 }));
             //NOTE: костыль, не работает, так как вызывается только у игроков в лобби,
             //игроки, которые просматривают все лобби не увидят изменения

@@ -19,7 +19,7 @@ namespace DurakClient.Services.LobbyServices
         public Task<JoinResult> JoinLobby(Guid lobbyId, string? password);
         public Task LeaveLobby();
         public Task StartGame();
-        public Task PrepareToGame();
+        public Task SetReadyStatus(bool readyStatus);
         public Task KickPlayer(Guid KickingPlayerId);
     }
 }

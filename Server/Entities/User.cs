@@ -5,7 +5,7 @@
         private bool _areReady = false;
         public required Guid Guid { get; set; }
         public required string NickName { get; set; }
-        public bool AreReady
+        public bool ReadyStatus
         {
             get => _areReady;
             set

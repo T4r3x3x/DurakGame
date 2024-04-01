@@ -95,17 +95,19 @@ namespace DurakClient.Services.LobbyServices
 
                 return JoinResult.Success;
             }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.PermissionDenied)
+            catch (RpcException ex)
             {
-                return JoinResult.WrongPassword;
-            }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
-            {
-                return JoinResult.LobbyNotFound;
-            }
-            catch
-            {
-                return JoinResult.UnkownException;
+                switch (ex.StatusCode)
+                {
+                    case StatusCode.PermissionDenied:
+                        return JoinResult.WrongPassword;
+                    case StatusCode.NotFound:
+                        return JoinResult.LobbyNotFound;
+                    case StatusCode.ResourceExhausted:
+                        return JoinResult.LobbyIsFull;
+                    default:
+                        return JoinResult.UnkownException;
+                }
             }
         }
 
@@ -133,10 +135,15 @@ namespace DurakClient.Services.LobbyServices
             await _lobbyService.StartGameAsync(actionRequest);
         }
 
-        public async Task PrepareToGame()
+        public async Task SetReadyStatus(bool readyStatus)
         {
             var actionRequest = GetActionRequest(_resources.LobbyId);
-            await _lobbyService.PrepareToGameAsync(actionRequest);
+            var readyStatusRequest = new ReadyStatusRequest()
+            {
+                Status = readyStatus,
+                ActionRequest = actionRequest
+            };
+            await _lobbyService.SetReadyStatusAsync(readyStatusRequest);
         }
 
         public async Task KickPlayer(Guid KickingPlayerId)

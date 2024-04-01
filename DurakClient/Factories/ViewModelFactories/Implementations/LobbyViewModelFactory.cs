@@ -19,7 +19,7 @@ namespace DurakClient.Factories.ViewModelFactories.Implementations
 
         public LobbyViewModel GetViewModel(IScreen hostScreen)
         {
-            return new LobbyViewModel(_lobbyService, _resources, hostScreen);
+            return new LobbyViewModel(_lobbyService, hostScreen);
         }
     }
 }
