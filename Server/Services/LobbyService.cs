@@ -194,8 +194,6 @@ namespace Server.Services
                     Nickname = x.NickName,
                     AreReady = x.ReadyStatus
                 }));
-            //NOTE: костыль, не работает, так как вызывается только у игроков в лобби,
-            //игроки, которые просматривают все лобби не увидят изменения
         }
 
         private void LobbyListResponceUpdate(IEnumerable<KeyValuePair<Guid, Lobby>> lobbies)

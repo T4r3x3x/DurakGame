@@ -1,12 +1,11 @@
 ﻿using DurakClient.Extensions;
 using DurakClient.Factories.ViewModelFactories;
+using DurakClient.MessageBoxes;
 using DurakClient.MVVM.Models;
 using DurakClient.Results;
 using DurakClient.Services.LobbyServices;
 
 using GameEngine.Entities.SystemEntites;
-
-using MsBox.Avalonia;
 
 using ReactiveUI;
 
@@ -63,52 +62,18 @@ namespace DurakClient.MVVM.ViewModels
         private async Task JoinLobby((Guid lobbyId, string? password) param)
         {
             var joinResult = await _lobbyService.JoinLobby(param.lobbyId, param.password);
-            if (joinResult == JoinResult.Success)
+
+            if (joinResult.Status == JoinResultStatus.Success)
             {
                 _lobbyService.StopListining();
                 var viewModel = _lobbyViewModelFactory.GetViewModel(HostScreen);
                 await HostScreen.Router.Navigate.Execute(viewModel);
             }
             else
-                await ShowErrorMessage(joinResult);
+                await HandleFailedJoinRequest(joinResult);
         }
 
-        private async Task ShowErrorMessage(JoinResult joinResult)
-        {
-            switch (joinResult)
-            {
-                case JoinResult.WrongPassword:
-                    {
-                        var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", "Inputed password is incorrect",
-                            MsBox.Avalonia.Enums.ButtonEnum.Ok);
-                        await messageBox.ShowAsync();
-                        break;
-                    }
-                case JoinResult.LobbyNotFound:
-                    {
-                        var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", "Something happend with lobby :(",
-                            MsBox.Avalonia.Enums.ButtonEnum.Ok);
-                        await messageBox.ShowAsync();
-                        break;
-                    }
-
-                case JoinResult.LobbyIsFull:
-                    {
-                        var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", "Lobby is already full =(",
-                         MsBox.Avalonia.Enums.ButtonEnum.Ok);
-                        await messageBox.ShowAsync();
-                        break;
-                    }
-
-                case JoinResult.UnkownException:
-                    {
-                        var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", "Unknown error =(",
-                           MsBox.Avalonia.Enums.ButtonEnum.Ok);
-                        await messageBox.ShowAsync();
-                        break;
-                    }
-            }
-        }
+        private async Task HandleFailedJoinRequest(JoinResult joinResult) => await MessageBoxHelper.ShowErrorMessageBoxAsync(joinResult.ToString());
 
         private IEnumerable<Lobby> FilterLobbies(Filter filter, IEnumerable<Lobby> lobbies)
         {

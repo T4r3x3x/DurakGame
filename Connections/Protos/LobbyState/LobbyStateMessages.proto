@@ -1,0 +1,42 @@
+syntax = "proto3";
+package Services;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "Protos/Common/CommonMessages.proto";
+
+option csharp_namespace = "Connections.Services";
+
+
+message LobbyStateRequestMessage{
+	Id id = 1;
+}
+
+message LobbyStateResponceMessage{	
+	repeated PlayerMessage players = 1; //добавить сеттингс?
+}
+
+message PlayerMessage{
+	string nickname = 1;
+	bool areReady = 2;
+}
+
+message JoinRequestMessage{
+	ActionMessage actionInfo = 1;
+	google.protobuf.StringValue password = 2;
+}
+
+message JoinResponceMessage{
+	Id lobbyId = 1;
+	bool isSuccessefully = 2;
+}
+
+message ReadyStatusRequestMessage{
+	bool status = 1;
+	ActionMessage actionInfo = 2;
+}
+
+message KickPlayerRequestMessage{
+	ActionMessage actionInfo = 1;
+	Id kickingPlayerId = 2;
+}

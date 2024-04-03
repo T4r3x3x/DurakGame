@@ -1,0 +1,31 @@
+syntax = "proto3";
+package Services;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "Protos/Common/CommonMessages.proto";
+import "Protos/Lobbies/LobbiesMessages.proto";
+
+option csharp_namespace = "Connections.Services";
+
+service LobbiesService{ 
+	rpc GetLobbiesStream(google.protobuf.Empty) returns (stream LobbyListResponce);
+	rpc CreateLobby(CreateLobbyRequest) returns (CreateLobbyResponce);
+	rpc DeleteLobby(DeleteLobbyRequest) returns (google.protobuf.Empty);
+}
+
+message CreateLobbyRequest{
+	CreateLobbyRequestMessage request = 1;
+}
+
+message CreateLobbyResponce{
+	CreateLobbyResponceMessage responce = 1;
+}
+
+message LobbyListResponce{
+	LobbyListResponceMessage responce = 1;
+}
+
+message DeleteLobbyRequest{
+	ActionMessage actionInfo = 1;
+}

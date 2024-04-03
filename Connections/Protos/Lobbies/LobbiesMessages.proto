@@ -1,0 +1,32 @@
+syntax = "proto3";
+package Services;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "Protos/Common/CommonMessages.proto";
+
+option csharp_namespace = "Connections.Services";
+
+message CreateLobbyRequestMessage{
+	string name = 1;
+	google.protobuf.StringValue password = 2;
+	Id creatorId = 3;
+	LobbySetting gameSettings = 4;
+}
+
+message CreateLobbyResponceMessage{
+	string lobbyId = 1;
+	bool isSuccessefully = 2;
+}
+
+message LobbyListResponceMessage{
+	repeated LobbyMessage lobbyList = 1;
+}
+
+message LobbyMessage{
+	string id = 1;
+	string name = 2;
+	LobbySetting settings = 3;
+	bool hasPassword = 4;
+	int32 joinedPlayersCount = 5;
+}

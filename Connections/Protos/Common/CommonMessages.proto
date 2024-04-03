@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "Connections.Services";
+
+message ActionMessage{
+	Id lobbyId = 1;
+	Id senderId = 2;
+}
+
+message Id{
+	string id = 1;
+}
+
+message LobbySetting{
+	int32 playersCount = 1;
+	DeckType deckType = 2;
+	int32 playersStartCardsCount = 3;
+}
+
+enum DeckType{
+	common = 0;
+	extended = 1;
+}

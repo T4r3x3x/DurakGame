@@ -83,8 +83,8 @@ namespace DurakClient.Services.LobbyServices
 
         public async Task<JoinResult> JoinLobby(Guid lobbyId, string? password)
         {
+            JoinResultStatus joinResultStatus;
             var actionRequest = GetActionRequest(lobbyId);
-
             var joinRequest = new JoinRequest() { ActionRequest = actionRequest, Password = password };
             try
             {
@@ -93,22 +93,25 @@ namespace DurakClient.Services.LobbyServices
                 if (responce.IsSuccessefully)
                     _resources.LobbyId = Guid.Parse(responce.LobbyId);
 
-                return JoinResult.Success;
+                joinResultStatus = JoinResultStatus.Success;
             }
             catch (RpcException ex)
             {
-                switch (ex.StatusCode)
-                {
-                    case StatusCode.PermissionDenied:
-                        return JoinResult.WrongPassword;
-                    case StatusCode.NotFound:
-                        return JoinResult.LobbyNotFound;
-                    case StatusCode.ResourceExhausted:
-                        return JoinResult.LobbyIsFull;
-                    default:
-                        return JoinResult.UnkownException;
-                }
+                joinResultStatus = GetJoinResultStatusByEx(ex);
             }
+
+            return new() { Status = joinResultStatus };
+        }
+
+        private static JoinResultStatus GetJoinResultStatusByEx(RpcException ex)
+        {
+            return ex.StatusCode switch
+            {
+                StatusCode.PermissionDenied => JoinResultStatus.WrongPassword,
+                StatusCode.NotFound => JoinResultStatus.LobbyNotFound,
+                StatusCode.ResourceExhausted => JoinResultStatus.LobbyIsFull,
+                _ => JoinResultStatus.UnkownException,
+            };
         }
 
         public async Task StartListiningLobbyState()

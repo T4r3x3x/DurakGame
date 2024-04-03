@@ -1,0 +1,36 @@
+syntax = "proto3";
+package Services;
+
+import "google/protobuf/empty.proto";
+import "Protos/Game/GameMessages.proto";
+import "Protos/Common/CommonMessages.proto";
+
+option csharp_namespace = "Connections.Services";
+
+service GameService{
+    rpc StartGame(StartGameRequest) returns (google.protobuf.Empty);
+    rpc EndTurn(EndTurnRequest) returns (google.protobuf.Empty);
+    rpc GiveUp(GiveUpRequest) returns (google.protobuf.Empty);
+    rpc ThrowDeffenceCard(ThrowDefenceCardRequest) returns (google.protobuf.Empty);
+    rpc ThrowAttackCard(ThrowAttackCardRequest) returns (google.protobuf.Empty);
+}
+      
+message StartGameRequest{
+    StartGameRequestMessage request = 1;
+}
+
+message EndTurnRequest{
+    ActionMessage actionInfo = 1;
+}
+
+message GiveUpRequest{
+    ActionMessage actionInfo = 1;
+}
+
+message ThrowDefenceCardRequest{
+    ThrowDefenceCardRequestMessage request = 1;
+}
+
+message ThrowAttackCardRequest{
+    ThrowAttackCardRequestMessage request = 1;
+}

@@ -1,0 +1,51 @@
+syntax = "proto3";
+package Services;
+
+import "google/protobuf/empty.proto";
+import "Protos/Common/CommonMessages.proto";
+
+option csharp_namespace = "Connections.Services";
+      
+message StartGameRequestMessage{
+    Id gameId = 1;
+}
+
+
+message ThrowAttackCardRequestMessage{
+    ActionMessage actionInfo = 1;
+    CardMessage Card = 2;
+}
+
+message ThrowDefenceCardRequestMessage{
+    ActionMessage actionInfo = 1;
+    CardMessage Card = 2;
+    int32 position = 3;
+}
+
+message CardMessage{
+    Rank rank = 1;
+    Suit suit = 2;
+}
+
+enum Rank{
+    Two = 0;
+    Three = 1;
+    Four = 2; 
+    Five = 3;
+    Six = 4;
+    Seven = 5; 
+    Eight = 6; 
+    Nine = 7;
+    Ten = 8; 
+    Jack = 9; 
+    Queen = 10;
+    King = 11;
+    Ace = 12;
+}
+
+enum Suit{
+    Diamonds = 0;
+    Hearts = 1;
+    Clubs = 2;
+    Spades = 3;
+}

@@ -8,7 +8,9 @@ using Splat;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 
 namespace DurakClient.MVVM.ViewModels
 {
@@ -43,13 +45,15 @@ namespace DurakClient.MVVM.ViewModels
 
             LeaveLobbyCommand = ReactiveCommand.Create(LeaveLobby);
             DeleteLobbyCommand = ReactiveCommand.Create(DeleteLobby);
-            StartGameCommand = ReactiveCommand.Create(StartGame);
+            StartGameCommand = ReactiveCommand.Create(StartGame, CanStartGame);
             KickPlayerCommand = ReactiveCommand.Create<Guid>(KickPlayer);
 
             Players = _lobbyService.Players;
 
             _lobbyService.StartListiningLobbyState();
         }
+        private IObservable<bool> CanStartGame => Players?.Select(x => x
+            .Where(x => x.AreReady).Count() == Players?.FirstOrDefault().Count());
 
         private void KickPlayer(Guid kickingPlayerId) => _lobbyService.KickPlayer(kickingPlayerId);
 

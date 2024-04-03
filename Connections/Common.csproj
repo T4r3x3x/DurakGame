@@ -6,15 +6,23 @@
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;AllTest</Configurations>
   </PropertyGroup>
+
+  <ItemGroup>
+	<None Remove="Protos\Common\CommonMessages.proto" />
+    <None Remove="Protos\Game\GameMessages.proto" />
+    <None Remove="Protos\Lobbies\LobbiesMessages.proto" />
+    <None Remove="Protos\LobbyState\LobbyStateMessages.proto" />
+    <None Remove="Protos\LobbyState\LobbyStateService.proto" />
+  </ItemGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
-		<PackageReference Include="Google.Protobuf" Version="3.25.2" />
-		<PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
-		<PackageReference Include="Grpc.AspNetCore.Server" Version="2.60.0" />
-		<PackageReference Include="Grpc.Net.Client" Version="2.60.0" />
-		<PackageReference Include="Grpc.Net.Common" Version="2.60.0" />
-		<PackageReference Include="Grpc.Tools" Version="2.61.0">
+		<PackageReference Include="Google.Protobuf" Version="3.26.1" />
+		<PackageReference Include="Grpc.AspNetCore" Version="2.62.0" />
+		<PackageReference Include="Grpc.AspNetCore.Server" Version="2.62.0" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
+		<PackageReference Include="Grpc.Net.Common" Version="2.62.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.62.0">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -25,13 +33,34 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Protobuf Include="Protos\ConnectionService.proto">
+		<Protobuf Include="Protos\Connection\ConnectionService.proto">
 			<Generator>MSBuild:Compile</Generator>
 		</Protobuf>
-		<Protobuf Include="Protos\GameService.proto">
+		<Protobuf Include="Protos\Game\GameMessages.proto">
+		  <Generator>MSBuild:Compile</Generator>
+		</Protobuf>
+		<Protobuf Include="Protos\Game\GameService.proto">
 			<Generator>MSBuild:Compile</Generator>
 		</Protobuf>
-		<Protobuf Include="Protos\LobbyService.proto">
+		<Protobuf Include="Protos\Lobbies\LobbiesMessages.proto">
+		  <Generator>MSBuild:Compile</Generator>
+		</Protobuf>
+		<Protobuf Include="Protos\Lobbies\LobbiesService.proto">
+			<Generator>MSBuild:Compile</Generator>
+		</Protobuf>
+		<Protobuf Include="Protos\LobbyState\LobbyStateMessages.proto">
+		  <Generator>MSBuild:Compile</Generator>
+		</Protobuf>
+		<Protobuf Include="Protos\LobbyState\LobbyStateService.proto">
+		  <Generator>MSBuild:Compile</Generator>
+		</Protobuf>
+		<Protobuf Include="Protos\Chat\ChatMessages.proto">
+			<Generator>MSBuild:Compile</Generator>
+		</Protobuf>
+		<Protobuf Include="Protos\Chat\ChatService.proto">
+			<Generator>MSBuild:Compile</Generator>
+		</Protobuf>
+		<Protobuf Include="Protos\Common\CommonMessages.proto">
 			<Generator>MSBuild:Compile</Generator>
 		</Protobuf>
 	</ItemGroup>

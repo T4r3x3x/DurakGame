@@ -1,0 +1,26 @@
+﻿syntax = "proto3";
+package Services;
+
+import "google/protobuf/empty.proto";
+import "Protos/Chat/ChatMessages.proto";
+import "Protos/Common/CommonMessages.proto";
+
+option csharp_namespace = "Connections.Services";
+
+service ChatService{
+	rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
+	rpc GetMessageStream(MessagesStreamRequest) returns (stream MessagesStreamResponce);
+}
+
+message SendMessageRequest{
+	ActionMessage actionRequest = 1; 
+	ChatMessage message = 2;
+}
+
+message MessagesStreamRequest{
+	string lobbyId = 1;
+}
+
+message MessagesStreamResponce{
+	repeated ChatMessage messages = 1;
+}

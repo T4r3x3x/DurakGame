@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Connections.Services";
+
+message ChatMessage{
+	string value = 1;
+	google.protobuf.Timestamp sendTime = 2;
+	MessageSender messageSender = 3;
+}
+
+message MessageSender{
+	string nickName = 1;
+}

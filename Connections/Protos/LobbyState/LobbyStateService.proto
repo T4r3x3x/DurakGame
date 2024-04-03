@@ -1,0 +1,45 @@
+syntax = "proto3";
+package Services;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "Protos/LobbyState/LobbyStateMessages.proto";
+import "Protos/Common/CommonMessages.proto";
+
+option csharp_namespace = "Connections.Services";
+
+service LobbyStateService{ 
+	rpc GetLobbyStateStream(LobbyStateRequest) returns (stream LobbyStateResponce);
+	rpc SetReadyStatus(ReadyStatusRequest) returns (google.protobuf.Empty);		
+	rpc JoinLobby(JoinRequest) returns (JoinResponce);
+	rpc LeaveLobby(LeaveLobbyRequest) returns (google.protobuf.Empty);	
+	rpc KickPlayer(KickPlayerRequest) returns (google.protobuf.Empty);	
+}
+
+message LobbyStateRequest{
+	LobbyStateRequestMessage request = 1;
+}
+
+message LobbyStateResponce{
+	LobbyStateResponceMessage request = 1;
+}
+
+message ReadyStatusRequest{
+	ReadyStatusRequestMessage request = 1;
+}
+
+message JoinRequest{
+	JoinRequestMessage request = 1;
+}
+
+message JoinResponce{
+	JoinResponceMessage responce = 1;
+}
+
+message LeaveLobbyRequest{
+	ActionMessage actionInfo = 1;
+}
+
+message KickPlayerRequest{
+	KickPlayerRequestMessage request = 1;
+}

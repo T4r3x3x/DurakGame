@@ -2,11 +2,12 @@ syntax = "proto3";
 package Services;
 
 import "google/protobuf/empty.proto";
+import "Protos/Common/CommonMessages.proto";
 
 option csharp_namespace = "Connections.Services";
 
 service ConnectionService{
-	rpc Connect(LoginRequest) returns (ConnectionReply);
+	rpc Connect(LoginRequest) returns (ConnectionResponce);
 	rpc Disconnect(DisconnectRequest) returns (google.protobuf.Empty);
 }
 
@@ -15,9 +16,9 @@ message LoginRequest{
 }
 
 message DisconnectRequest{
-	string id = 1;
+	Id id = 1;
 }
 
-message ConnectionReply{
-	string id = 1;
+message ConnectionResponce{
+	Id id = 1;
 }
